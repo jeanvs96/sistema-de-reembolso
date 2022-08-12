@@ -2,15 +2,15 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums;
 
 import java.util.Arrays;
 
-public enum Cargo {
-    ROLE_COLABORADOR("colaborador"),
-    ROLE_GESTOR("gestor"),
-    ROLE_FINANCEIRO("financeiro"),
-    ROLE_ADMINISTRADOR("colaborador");
+public enum TipoRoles {
+    COLABORADOR("ROLE_COLABORADOR"),
+    GESTOR("ROLE_GESTOR"),
+    FINANCEIRO("ROLE_FINANCEIRO"),
+    ADMINISTRADOR("ROLE_ADMINISTRADOR");
 
     private String tipoMensagem;
 
-    Cargo(String tipoMensagem) {
+    TipoRoles(String tipoMensagem) {
         this.tipoMensagem = tipoMensagem;
     }
 
@@ -18,8 +18,8 @@ public enum Cargo {
         return tipoMensagem;
     }
 
-    public static Cargo ofTipo(String tipoMensagem) {
-        return Arrays.stream(Cargo.values())
+    public static TipoRoles ofTipo(String tipoMensagem) {
+        return Arrays.stream(TipoRoles.values())
                 .filter(tp -> tp.getTipo().equals(tipoMensagem))
                 .findFirst()
                 .get();

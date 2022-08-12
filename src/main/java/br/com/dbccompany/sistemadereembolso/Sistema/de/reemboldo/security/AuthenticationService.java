@@ -1,9 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.security;
 
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.UserLoginEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.UsuarioEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service.UserLoginService;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,15 +15,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService implements UserDetailsService {
 
-    private final UserLoginService userLoginService;
+    private final UsuarioService usuarioService;
 
-    @Override //2:11
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        //buscar usuário pelo login
-        Optional<UsuarioEntity> optionalUserLogin = userLoginService.findByLogin(username);
-
-        return (UserDetails) optionalUserLogin
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<UsuarioEntity> optionalUserLogin = usuarioService.findByEmail(email);
+        return optionalUserLogin
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário Inválido"));
 
     }

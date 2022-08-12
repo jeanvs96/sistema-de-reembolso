@@ -1,10 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.security;
 
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.CargoEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.UserLoginEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service.UserLoginService;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service.UsuarioService;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.RolesEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.UsuarioEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -20,74 +18,50 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TokenService {
-
     @Value("${jwt.secret}")
     private String secret;
+    private static final String ROLES = "roles";
 
-    @Value("${jwt.expiration}")
-    private String expiration;
-
-    private final UsuarioService usuarioService;
-    //private static final String TOKEN_PREFIX = "Bearer ";
-    private static final String KEY_CARGOS = "roles";
-
-//TODO - personalizar exception
-    //criando um token JWT
-    public String getToken(UserLoginEntity userLoginEntity) throws Exception {
-
-        if (userLoginEntity.getStatus().equals(false)) {
-            throw new Exception("Seu login foi desativado. Entre em contato com o suporte: contato@devland.com");
-        }
-
+    public String getToken(UsuarioEntity usuarioEntity, String expiration) {
         Date now = new Date();
-        Date exp = new Date(now.getTime() + Long.valueOf(expiration)); //convertendo para long
+        Date exp = new Date(now.getTime() + Long.parseLong(expiration));
 
-        List<CargoEntity> listaDeCargos = userLoginEntity.getCargos().stream()
-                .map(cargoEntity -> cargoEntity)
+        List<String> listaDeCargos = usuarioEntity.getRolesEntities().stream()
+                .map(RolesEntity::getNome)
                 .toList();
 
         String token = Jwts.builder()
-                .setIssuer("devland-api")
-                .claim(Claims.ID, userLoginEntity.getIdUserLogin())
-                .claim(KEY_CARGOS, listaDeCargos)
+                .setIssuer("sistema-de-reembolso-api")
+                .claim(Claims.ID, usuarioEntity.getIdUsuario())
+                .claim(ROLES, listaDeCargos)
                 .setIssuedAt(now)
                 .setExpiration(exp)
                 .signWith(SignatureAlgorithm.HS256, secret)
                 .compact();
 
-
-        //return TOKEN_PREFIX + token;
         return TokenAuthenticationFilter.BEARER + token;
     }
 
-    //validar se o token é válido e retornar o usuário se for válido
     public UsernamePasswordAuthenticationToken isValid(String token) {
-
         if (token == null) {
             return null;
         }
 
-        Claims payload = Jwts.parser()
+        Claims body = Jwts.parser()
                 .setSigningKey(secret)
-                .parseClaimsJws(token) //tb verifica a expiração
+                .parseClaimsJws(token)
                 .getBody();
 
-        //busca/ recupera o id que está dentro do body (payload) do JWTS
-        Integer idUsuario = payload.get(Claims.ID, Integer.class);
+        Integer idUsuario = body.get(Claims.ID, Integer.class);
 
-        if (idUsuario != null) {
-            List<String> cargos = payload.get(KEY_CARGOS, List.class);
+        if (idUsuario != null){
+            List<String> roles = body.get(ROLES, List.class);
 
-            List<SimpleGrantedAuthority> cargosGrantedAuthority = cargos.stream()
-                    .map(cargo -> new SimpleGrantedAuthority(cargo))
+            List<SimpleGrantedAuthority> rolesGrantedAuthority = roles.stream()
+                    .map(role -> new SimpleGrantedAuthority(role))
                     .toList();
 
-            //como o jws já sinalizou que a chave é válida, estamos buscando do póprio jwt
-            // e setando no objeto abaixo
-            UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
-                    new UsernamePasswordAuthenticationToken(idUsuario, null, cargosGrantedAuthority);
-
-            return usernamePasswordAuthenticationToken;
+            return new UsernamePasswordAuthenticationToken(idUsuario, null, rolesGrantedAuthority);
         }
         return null;
     }
