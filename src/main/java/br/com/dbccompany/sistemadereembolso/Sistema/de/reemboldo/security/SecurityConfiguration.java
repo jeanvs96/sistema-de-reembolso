@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((auth) ->
-                        auth.antMatchers("/", "/auth", "/auth/cadastro", "/auth/recuperar-login")
+                        auth.antMatchers()
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated());
@@ -65,7 +65,6 @@ public class SecurityConfiguration {
         return new BCryptPasswordEncoder();
     }
 
-    //retorna a autenticação do spring
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();

@@ -5,6 +5,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.Usu
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioLoginDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.AtivarDesativarUsuario;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 public interface UsuarioDocumentation {
 
@@ -36,7 +38,7 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Cadastrar usuário.", description = "Cadastra no banco de dados uma pessoa com a role de ADMIN, ALUNO OU PROFESSOR.")
-    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
+    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, @RequestParam Set<TipoRoles> roles) throws RegraDeNegocioException;
 
     @GetMapping("/logged")
     @ApiResponses(

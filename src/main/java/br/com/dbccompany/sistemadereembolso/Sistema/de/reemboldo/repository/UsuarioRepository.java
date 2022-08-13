@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Integer> {
-    Optional<UsuarioEntity> findByEmail(String login);
+    Optional<UsuarioEntity> findByEmail(String email);
 
     Optional<UsuarioEntity> findByEmailAndSenha(String email, String senha);
 }

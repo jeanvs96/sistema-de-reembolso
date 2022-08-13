@@ -10,6 +10,5 @@ public class UsuarioCreateDTO {
     private String nome;
     private String email;
     private String senha;
-    private String foto;
-    private Set<TipoRoles> roles;
+    private Byte[] foto;
 }

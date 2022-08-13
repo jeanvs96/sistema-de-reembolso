@@ -6,6 +6,7 @@ create table usuario (
 	senha text not null,
 	email text not null unique,
 	foto bytea,
+	status boolean not null,
 	primary key(id_usuario)
 );
 
@@ -24,7 +25,7 @@ create sequence seq_roles
 start 1;
 
 create table usuario_roles(
-	id_usuario_roles bigint not null,
+	id_usuario_roles bigint not null default nextval('sistema_de_reembolso.seq_usuario_roles'),
 	id_usuario bigint not null,
 	id_roles bigint not null,
 	primary key(id_usuario_roles),

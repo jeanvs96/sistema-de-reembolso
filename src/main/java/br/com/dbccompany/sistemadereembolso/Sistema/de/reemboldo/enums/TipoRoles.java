@@ -6,7 +6,7 @@ public enum TipoRoles {
     COLABORADOR("ROLE_COLABORADOR"),
     GESTOR("ROLE_GESTOR"),
     FINANCEIRO("ROLE_FINANCEIRO"),
-    ADMINISTRADOR("ROLE_ADMINISTRADOR");
+    ADMINISTRADOR("ROLE_ADMIN");
 
     private String tipoMensagem;
 

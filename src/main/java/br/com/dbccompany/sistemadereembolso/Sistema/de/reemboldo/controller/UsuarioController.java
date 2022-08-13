@@ -6,6 +6,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.Usu
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioLoginDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.AtivarDesativarUsuario;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.security.AuthenticationService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service.LoginService;
@@ -17,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/usuario")
@@ -32,8 +34,8 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @PostMapping("/cadastro-usuario")
-    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException, RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.saveUsuario(usuarioCreateDTO), HttpStatus.OK);
+    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, @RequestParam Set<TipoRoles> roles) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.saveUsuario(usuarioCreateDTO, roles), HttpStatus.OK);
     }
 
     @GetMapping("/logged")

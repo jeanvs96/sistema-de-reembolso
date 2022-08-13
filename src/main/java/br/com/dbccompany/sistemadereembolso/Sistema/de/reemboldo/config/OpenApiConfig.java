@@ -40,7 +40,7 @@ public class OpenApiConfig {
                                 .url("https://www.dbccompany.com.br/"))
                         .contact(new Contact()
                                 .name("Github da API")
-                                .url("https://github.com/sou-rafael/DevLand-Produtor.git")))
+                                .url("https://github.com/jeanvs96/sistema-de-reembolso")))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(
                         new Components()
@@ -49,10 +49,7 @@ public class OpenApiConfig {
                                                 .name(securitySchemeName)
                                                 .type(SecurityScheme.Type.HTTP)
                                                 .scheme("bearer")
-                                                .bearerFormat("JWT")))
-                .externalDocs(new ExternalDocumentation()
-                        .description("Clique aqui para ver nosso Diagrama de Entidade Relacionamento")
-                        .url("https://i.imgur.com/jbi75M9.png"));
+                                                .bearerFormat("JWT")));
     }
 }
 

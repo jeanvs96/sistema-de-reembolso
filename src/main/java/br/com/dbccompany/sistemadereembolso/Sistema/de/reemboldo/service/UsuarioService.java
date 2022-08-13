@@ -2,7 +2,6 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioLoginDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.entity.UsuarioEntity;
@@ -10,13 +9,8 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.AtivarDes
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.repository.UsuarioRepository;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reemboldo.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,17 +31,18 @@ public class UsuarioService {
 
 
 
-    public UsuarioDTO saveUsuario(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+    public UsuarioDTO saveUsuario(UsuarioCreateDTO usuarioCreateDTO, Set<TipoRoles> roles) throws RegraDeNegocioException {
         verificarHostEmail(usuarioCreateDTO.getEmail());
         verificarSeEmailExiste(usuarioCreateDTO.getEmail());
 
         UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
 
         Set<RolesEntity> rolesEntities = new HashSet<>();
-        for (TipoRoles role: usuarioCreateDTO.getRoles()) {
+        for (TipoRoles role: roles) {
             rolesEntities.add(rolesService.findByRole(role.getTipo()));
         }
         usuarioEntity.setRolesEntities(rolesEntities);
+        usuarioEntity.setStatus(true);
 
         return entityToDto(usuarioRepository.save(usuarioEntity));
     }
