@@ -45,7 +45,7 @@ public class UsuarioEntity implements UserDetails {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_roles")
     )
-    private List<RolesEntity> rolesEntities;
+    private Set<RolesEntity> rolesEntities;
 
     @JsonIgnore
     @OneToMany(mappedBy = "usuarioEntity",

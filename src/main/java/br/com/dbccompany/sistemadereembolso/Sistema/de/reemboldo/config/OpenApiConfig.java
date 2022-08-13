@@ -32,8 +32,8 @@ public class OpenApiConfig {
         String securitySchemeName = "bearerAuth";
         return new OpenAPI()
                 .info(new Info()
-                        .title("DevLand API Produtor - Documentação")
-                        .description("Implementando Mensageria")
+                        .title("Sistema de Reembolso API")
+                        .description("Documentação da API")
                         .version("v1.0.0")
                         .license(new License()
                                 .name("DBC Company")
