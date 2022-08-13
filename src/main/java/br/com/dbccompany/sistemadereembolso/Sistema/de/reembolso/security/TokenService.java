@@ -63,6 +63,7 @@ public class TokenService {
 
             return new UsernamePasswordAuthenticationToken(idUsuario, null, rolesGrantedAuthority);
         }
+
         return null;
     }
 }
