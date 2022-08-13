@@ -106,9 +106,13 @@ public class UsuarioService {
     }
 
     public UsuarioDTO getLoggedUser() throws RegraDeNegocioException {
-        Integer idLoggedUser = getIdLoggedUser();
-        UsuarioEntity byId = findById(idLoggedUser);
-        return entityToDto(byId);
+        try {
+            Integer idLoggedUser = getIdLoggedUser();
+            UsuarioEntity byId = findById(idLoggedUser);
+            return entityToDto(byId);
+        }catch (RegraDeNegocioException e){
+            throw new RegraDeNegocioException("Nao ha usuario logado"); // TODO - tratar melhor essa ClassCastException
+        }
     }
 
     public String ativarDesativarUsuario(Integer idUsuario, AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {

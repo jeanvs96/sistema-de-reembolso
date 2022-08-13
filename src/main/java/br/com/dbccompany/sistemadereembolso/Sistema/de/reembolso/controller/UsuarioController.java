@@ -28,7 +28,7 @@ public class UsuarioController implements UsuarioDocumentation {
     private final LoginService loginService;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid UsuarioLoginDTO usuarioLoginDTO) {
+    public ResponseEntity<String> login(@RequestBody @Valid UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(loginService.login(usuarioLoginDTO), HttpStatus.OK);
     }
 
