@@ -18,9 +18,10 @@ public class UsuarioCreateDTO {
     @Email
     private String email;
 
-    @Schema(example = "Su@Senha!23")
+    @Schema(example = "Sua@Senha!23")
     @NotBlank
     private String senha;
 
+    @Schema(example = "[]")
     private Byte[] foto;
 }

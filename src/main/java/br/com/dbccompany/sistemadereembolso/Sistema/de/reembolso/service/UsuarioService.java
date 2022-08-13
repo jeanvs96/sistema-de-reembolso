@@ -11,6 +11,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.Regr
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UsuarioService {
     private static final String EMAIL_HOST = "dbccompany.com.br";
     private final UsuarioRepository usuarioRepository;
@@ -38,7 +40,11 @@ public class UsuarioService {
 
         usuarioEntity.setStatus(true);
 
-        return entityToDto(usuarioRepository.save(usuarioEntity));
+        UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
+
+        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
+
+        return entityToDto(usuarioSalvo);
     }
 
     public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException {
@@ -62,6 +68,15 @@ public class UsuarioService {
         }
 
         return entityToDto(usuarioRepository.save(usuarioEntityRecuperado));
+    }
+
+    public void deleteUsuario(Integer idUsuario) throws RegraDeNegocioException {
+        UsuarioEntity usuarioDeletar = findById(idUsuario);
+        String nome = usuarioDeletar.getNome();
+
+        usuarioRepository.delete(usuarioDeletar);
+
+        log.info("Usuário "+ nome+ " com id: "+idUsuario+" foi deletado com sucesso!");
     }
 
     @Transactional
@@ -109,6 +124,8 @@ public class UsuarioService {
             return "Desativado";
         }
     }
+
+    //  ===================== METODOS AUXILIARES ====================
 
     public void encodePassword(UsuarioEntity usuarioEntity) {
         usuarioEntity.setSenha(passwordEncoder.encode(usuarioEntity.getPassword()));
