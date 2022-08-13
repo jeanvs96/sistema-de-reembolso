@@ -24,6 +24,10 @@ create sequence seq_roles
     increment 1
 start 1;
 
+create sequence seq_usuario_roles
+    increment 1
+start 1;
+
 create table usuario_roles(
 	id_usuario_roles bigint not null default nextval('sistema_de_reembolso.seq_usuario_roles'),
 	id_usuario bigint not null,
@@ -37,9 +41,6 @@ create table usuario_roles(
 		references roles(id_roles)
 );
 
-create sequence seq_usuario_roles
-    increment 1
-start 1;
 
 create table reembolso(
 	id_reembolso bigint not null,
