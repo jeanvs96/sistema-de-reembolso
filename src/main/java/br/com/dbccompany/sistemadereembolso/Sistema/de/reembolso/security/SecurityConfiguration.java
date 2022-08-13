@@ -29,8 +29,10 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((auth) ->
-                        auth.antMatchers()
+                        auth.antMatchers("/usuario/logged")
                                 .permitAll()
+                                .antMatchers("/usuario/role").hasRole("ADMIN")
+                                .antMatchers("/usuario/ativar-desativar-usuario/{idUsuario}").hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated());
 
@@ -45,7 +47,8 @@ public class SecurityConfiguration {
                 "/v3/api-docs/**",
                 "/swagger-resources/**",
                 "/swagger-ui/**",
-                "/**");
+                "/usuario/login",
+                "/usuario/cadastro");
     }
 
     @Bean

@@ -25,11 +25,10 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "senha")
-    private String senha;
-
     @Column(name = "email")
     private String email;
+    @Column(name = "senha")
+    private String senha;
 
     @Column(name = "foto")
     private Byte[] foto;
@@ -38,7 +37,7 @@ public class UsuarioEntity implements UserDetails {
     private Boolean status;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "usuario_roles",
             joinColumns = @JoinColumn(name = "id_usuario"),

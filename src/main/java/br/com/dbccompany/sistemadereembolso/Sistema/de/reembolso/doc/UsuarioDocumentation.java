@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 import java.util.Set;
 
@@ -21,9 +20,9 @@ public interface UsuarioDocumentation {
     @PostMapping("/login")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Login criado com sucesso."),
+                    @ApiResponse(responseCode = "200", description = "Login efetuado com sucesso."),
                     @ApiResponse(responseCode = "404", description = "Login inválido."),
-                    @ApiResponse(responseCode = "500", description = "Erro ao criar login.")
+                    @ApiResponse(responseCode = "500", description = "Erro no servidor.")
             }
     )
     @Operation(summary = "Autenticar usuário.", description = "Valida através da geração de um token a existência do par login/senha cadastrado no banco de dados.")
@@ -32,18 +31,28 @@ public interface UsuarioDocumentation {
     @PostMapping("/cadastro-usuario")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Login administrador criado com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Login inválido."),
-                    @ApiResponse(responseCode = "500", description = "Erro ao criar login.")
+                    @ApiResponse(responseCode = "200", description = "Cadastro criado com sucesso."),
+                    @ApiResponse(responseCode = "404", description = "Recurso não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro ao criar cadastro.")
             }
     )
-    @Operation(summary = "Cadastrar usuário.", description = "Cadastra no banco de dados uma pessoa com a role de ADMIN, ALUNO OU PROFESSOR.")
-    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, @RequestParam Set<TipoRoles> roles) throws RegraDeNegocioException;
+    @Operation(summary = "Cadastrar usuário.", description = "Cadastra um usuário no banco de dados, com uma ou mais roles(ADMIN, GESTOR, FINANCEIRO, COLABORADOR).")
+    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
 
+    @PostMapping("/role")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Role atribuidad com sucesso."),
+                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro ao criar cadastro.")
+            }
+    )
+    @Operation(summary = "Atualiza role do usuário.", description = "Altera a role (ADMIN, GESTOR, FINANCEIRO, COLABORADOR) do usuário pelo ID, caso seja passada a role ADMIN, todas as roles serão atribuídas.")
+    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException;
     @GetMapping("/logged")
     @ApiResponses(
             value = {
-                    @ApiResponse(responseCode = "200", description = "Verificação de log realizada com sucesso."),
+                    @ApiResponse(responseCode = "200", description = "Retorna o usuário logado."),
                     @ApiResponse(responseCode = "404", description = "O usuário não foi encontrado."),
                     @ApiResponse(responseCode = "500", description = "Erro ao buscar entidade logada.")
             }
@@ -59,7 +68,7 @@ public interface UsuarioDocumentation {
                     @ApiResponse(responseCode = "500", description = "Falha ao desativar/ativar usuário.")
             }
     )
-    @Operation(summary = "Ativar/Desativar usuario.", description = "Muda o status de certo usuário no banco de dados para Ativado||Desativado.")
+    @Operation(summary = "Ativar/Desativar usuario.", description = "Muda o status do usuário no banco de dados para Ativado ou Desativado.")
     public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException;
 
     @PutMapping("/update")
@@ -70,6 +79,6 @@ public interface UsuarioDocumentation {
                     @ApiResponse(responseCode = "500", description = "Falha ao atualizar esses dados.")
             }
     )
-    @Operation(summary = "Atualizar usuário.", description = "Atualiza o usuário no banco de dados, podendo mudar o login, a senha, ou ambos.")
+    @Operation(summary = "Atualizar usuário.", description = "Atualiza o usuário logado no banco de dados, podendo alterar um ou vários dados do usuário.")
     public ResponseEntity<UsuarioDTO> updateUsuario(@RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException;
 }

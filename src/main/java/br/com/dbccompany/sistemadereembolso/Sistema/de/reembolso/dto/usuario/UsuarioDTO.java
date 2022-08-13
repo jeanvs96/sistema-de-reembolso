@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UsuarioDTO {
+    private Integer idUsuario;
     private String nome;
     private String email;
     private Byte[] foto;

@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class UsuarioLoginDTO {
 
-    @Schema(example = "admin")
+    @Schema(example = "seuemail@dbccompany.com.br")
     @NotNull
     @Email
     private String login;

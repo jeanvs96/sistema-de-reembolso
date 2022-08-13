@@ -14,8 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -26,22 +26,16 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
-
     private final RolesService rolesService;
 
 
 
-    public UsuarioDTO saveUsuario(UsuarioCreateDTO usuarioCreateDTO, Set<TipoRoles> roles) throws RegraDeNegocioException {
+    public UsuarioDTO saveUsuario(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         verificarHostEmail(usuarioCreateDTO.getEmail());
         verificarSeEmailExiste(usuarioCreateDTO.getEmail());
 
         UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
 
-        Set<RolesEntity> rolesEntities = new HashSet<>();
-        for (TipoRoles role: roles) {
-            rolesEntities.add(rolesService.findByRole(role.getTipo()));
-        }
-        usuarioEntity.setRolesEntities(rolesEntities);
         usuarioEntity.setStatus(true);
 
         return entityToDto(usuarioRepository.save(usuarioEntity));
@@ -68,6 +62,24 @@ public class UsuarioService {
         }
 
         return entityToDto(usuarioRepository.save(usuarioEntityRecuperado));
+    }
+
+    @Transactional
+    public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
+        UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
+        RolesEntity rolesEntity = rolesService.findByRole(role.getTipo());
+        usuarioEntityRecuperado.setRolesEntities(Set.of(rolesEntity));
+
+        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
+        }
+        UsuarioEntity usuarioEntityAtulizado = usuarioRepository.save(usuarioEntityRecuperado);
+        return entityToDto(usuarioEntityAtulizado);
     }
 
     public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
