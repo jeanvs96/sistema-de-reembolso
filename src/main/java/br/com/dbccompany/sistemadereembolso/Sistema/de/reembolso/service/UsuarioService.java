@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -83,18 +84,27 @@ public class UsuarioService {
     public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
         UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
         RolesEntity rolesEntity = rolesService.findByRole(role.getTipo());
-        usuarioEntityRecuperado.setRolesEntities(Set.of(rolesEntity));
 
-        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
-        }
-        UsuarioEntity usuarioEntityAtulizado = usuarioRepository.save(usuarioEntityRecuperado);
-        return entityToDto(usuarioEntityAtulizado);
+
+        Set<RolesEntity> setRoles = usuarioEntityRecuperado.getRolesEntities();
+        setRoles.add(rolesEntity);
+
+        usuarioEntityRecuperado.setRolesEntities(setRoles);
+
+
+//        usuarioEntityRecuperado.setRolesEntities(Set.of(rolesEntity));
+
+//        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
+//        }
+
+        UsuarioEntity usuarioEntityAtualizado = usuarioRepository.save(usuarioEntityRecuperado);
+        return entityToDto(usuarioEntityAtualizado);
     }
 
     public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
