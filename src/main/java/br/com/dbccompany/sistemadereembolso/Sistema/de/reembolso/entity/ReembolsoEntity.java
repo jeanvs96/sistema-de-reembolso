@@ -31,6 +31,9 @@ public class ReembolsoEntity {
     @Column(name = "titulo")
     private String titulo;
 
+    @Column(name = "anexo")
+    private Byte[] anexo;
+
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.MERGE)

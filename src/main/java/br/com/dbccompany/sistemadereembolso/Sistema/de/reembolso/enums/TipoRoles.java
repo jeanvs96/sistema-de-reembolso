@@ -8,19 +8,19 @@ public enum TipoRoles {
     FINANCEIRO("ROLE_FINANCEIRO"),
     ADMINISTRADOR("ROLE_ADMIN");
 
-    private String tipoMensagem;
+    private final String tipoRoles;
 
-    TipoRoles(String tipoMensagem) {
-        this.tipoMensagem = tipoMensagem;
+    TipoRoles(String cargo) {
+        this.tipoRoles = cargo;
     }
 
     public String getTipo() {
-        return tipoMensagem;
+        return tipoRoles;
     }
 
-    public static TipoRoles ofTipo(String tipoMensagem) {
+    public static TipoRoles ofTipo(String tipoRoles) {
         return Arrays.stream(TipoRoles.values())
-                .filter(tp -> tp.getTipo().equals(tipoMensagem))
+                .filter(tp -> tp.getTipo().equals(tipoRoles))
                 .findFirst()
                 .get();
     }
