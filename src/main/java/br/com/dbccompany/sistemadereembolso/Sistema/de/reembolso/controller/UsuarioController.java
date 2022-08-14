@@ -1,10 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.UsuarioDocumentation;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioUpdateDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.AtivarDesativarUsuario;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
@@ -17,6 +15,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -45,6 +44,11 @@ public class UsuarioController implements UsuarioDocumentation {
     @GetMapping("/logged")
     public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.getLoggedUser(), HttpStatus.OK);
+    }
+
+    @GetMapping("/listar")
+    public List<UsuarioRelatorioDTO> listarRelatorioUsuarios(){
+        return usuarioService.listarUsuarios();
     }
 
     @PutMapping("/ativar-desativar-usuario/{idUsuario}")

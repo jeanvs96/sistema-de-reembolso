@@ -2,6 +2,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioRelatorioDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioUpdateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -123,6 +125,18 @@ public class UsuarioService {
         }catch (RegraDeNegocioException e){
             throw new RegraDeNegocioException("Nao ha usuario logado"); // TODO - tratar melhor essa ClassCastException
         }
+    }
+
+    public List<UsuarioRelatorioDTO> listarUsuarios (){
+        List<UsuarioRelatorioDTO> all = usuarioRepository.findAll().stream()
+                .map(user-> {
+                    UsuarioRelatorioDTO usuarioRelatorioDTO = objectMapper.convertValue(user, UsuarioRelatorioDTO.class);
+                    usuarioRelatorioDTO.setRolesEntities(user.getRolesEntities());
+                    usuarioRelatorioDTO.setReembolsoEntities(user.getReembolsoEntities());
+                    return usuarioRelatorioDTO;
+                })
+                .toList();
+        return all;
     }
 
     public String ativarDesativarUsuario(Integer idUsuario, AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {
