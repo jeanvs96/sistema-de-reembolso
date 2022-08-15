@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 // TODO - permitir acesso somente ao ADMIN
-@RestController
-@RequestMapping("/roles")
+//@RestController
+//@RequestMapping("/roles")
 @RequiredArgsConstructor
-@Validated
+//@Validated
 public class RolesController {
     private final RolesService rolesService;
 

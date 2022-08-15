@@ -18,10 +18,10 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Set;
 
-@RestController
-@RequestMapping("/usuario")
+//@RestController
+//@RequestMapping("/usuario")
 @RequiredArgsConstructor
-@Validated
+//@Validated
 public class UsuarioController implements UsuarioDocumentation {
     private final UsuarioService usuarioService;
     private final LoginService loginService;

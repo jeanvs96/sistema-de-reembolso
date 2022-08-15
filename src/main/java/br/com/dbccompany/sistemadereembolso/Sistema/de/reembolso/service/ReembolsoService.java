@@ -52,6 +52,48 @@ public class ReembolsoService {
         return convertEntityToDTO(savedEntity);
     }
 
+    public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
+        ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
+
+        if(aprovado){
+            reembolsoEntity.setData(LocalDateTime.now());
+            reembolsoEntity.setStatus(StatusReembolso.APROVADO_GESTOR.getTipo());
+
+            ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
+            log.info("Solicitacao de reembolso APROVADO pelo GESTOR.");
+
+            return convertEntityToDTO(savedEntity);
+        } else {
+            reembolsoEntity.setData(LocalDateTime.now());
+            reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.getTipo());
+
+            ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
+            log.info("Solicitacao de reembolso REPROVADO pelo GESTOR.");
+
+            return convertEntityToDTO(savedEntity);
+        }
+    }
+    public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
+        ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
+
+        if(pagar){
+            reembolsoEntity.setData(LocalDateTime.now());
+            reembolsoEntity.setStatus(StatusReembolso.FECHADO_PAGO.getTipo());
+
+            ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
+            log.info("Solicitacao de reembolso FECHADO E PAGO pelo FINANCEIRO.");
+
+            return convertEntityToDTO(savedEntity);
+        } else {
+            reembolsoEntity.setData(LocalDateTime.now());
+            reembolsoEntity.setStatus(StatusReembolso.REPROVADO_FINANCEIRO.getTipo());
+
+            ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
+            log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
+
+            return convertEntityToDTO(savedEntity);
+        }
+    }
     public List<ReembolsoDTO> listAdmin() {
         return reembolsoRepository.findAll().stream()
                 .map(rb->{
