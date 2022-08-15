@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
@@ -10,6 +11,10 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.Reem
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -93,12 +98,14 @@ public class ReembolsoService {
         }
     }
 
-    public List<ReembolsoDTO> findAll() {
-        return reembolsoRepository.findAllByOrderByStatusAscDataAsc().stream()
+    public PageDTO<ReembolsoDTO> findAllReembolsos(Integer pagina, Integer quantidadeDeRegistros) {
+        List<ReembolsoDTO> reembolsoDTOS = reembolsoRepository.findAllByOrderByStatusAscDataAsc().stream()
                 .map(reembolsoEntity -> {
                     ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
                     return reembolsoDTO;
                 }).toList();
+        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOS);
+        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
     }
 
     public void deleteAdmin(Integer idReembolso) {

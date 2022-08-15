@@ -1,11 +1,13 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ReembolsoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -25,8 +27,8 @@ public class ReembolsoController {
         return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
     }
     @GetMapping("/list")
-    public ResponseEntity<List<ReembolsoDTO>> listAll(){
-        return new ResponseEntity<>(reembolsoService.findAll(), HttpStatus.OK);
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listAll(Integer pagina, Integer quantidadeDeRegistros){
+        return new ResponseEntity<>(reembolsoService.findAllReembolsos(pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
     @PutMapping("/updateAdmin/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateAdmin(@PathVariable("idReembolso") Integer idReembolso ,@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {

@@ -19,10 +19,10 @@ public class FinanceiroController {
     private final ReembolsoService reembolsoService;
 
 
-    @GetMapping("/listAdmin") //    TODO - fazer listagem reembolsos somente com status "aprovado_gestor"
-    public ResponseEntity<List<ReembolsoDTO>> listAdmin() {
-        return new ResponseEntity<>(reembolsoService.findAll(), HttpStatus.OK);
-    }
+//    @GetMapping("/listAdmin") //    TODO - fazer listagem reembolsos somente com status "aprovado_gestor"
+//    public ResponseEntity<List<ReembolsoDTO>> listAdmin() {
+//        return new ResponseEntity<>(reembolsoService.findAllReembolsos(), HttpStatus.OK);
+//    }
 
     @PutMapping("/pagar/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updatePagar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean pagar) throws RegraDeNegocioException {
