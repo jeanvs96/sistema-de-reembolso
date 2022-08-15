@@ -43,17 +43,6 @@ public class ReembolsoService {
         return reembolsoDTO;
     }
 
-    public ReembolsoDTO updateAdmin(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
-        ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
-
-        reembolsoEntity = createToEntity(reembolsoCreateDTO);
-        reembolsoEntity.setData(LocalDateTime.now());
-
-        ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
-        log.info("Solicitacao de reembolso atualizado");
-        return entityToDTO(savedEntity);
-    }
-
     public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
         ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
 
@@ -107,12 +96,6 @@ public class ReembolsoService {
                     return reembolsoDTO;
                 }).toList();
         return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
-    }
-
-    public void deleteAdmin(Integer idReembolso) {
-        ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
-        reembolsoRepository.delete(reembolsoEntity);
-        log.info("Solicitacao de reembolso deletada com sucesso.");
     }
 
     //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
