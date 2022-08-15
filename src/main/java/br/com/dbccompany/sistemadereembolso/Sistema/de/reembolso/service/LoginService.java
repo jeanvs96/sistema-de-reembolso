@@ -20,7 +20,7 @@ public class LoginService {
     public String login(UsuarioLoginDTO usuarioLoginDTO) {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        usuarioLoginDTO.getLogin(),
+                        usuarioLoginDTO.getEmail(),
                         usuarioLoginDTO.getSenha()
                 );
 
