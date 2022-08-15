@@ -25,18 +25,15 @@ public class ReembolsoService {
     private final ObjectMapper objectMapper;
 
     public ReembolsoDTO create(ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
-        UsuarioEntity usuarioLogadoEntity = getUsuarioLogadoEntity();
+        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
 
-        ReembolsoEntity reembolsoEntity = new ReembolsoEntity();
-        reembolsoEntity = convertCreateTOEntity(reembolsoCreateDTO);
+        ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
         reembolsoEntity.setData(LocalDateTime.now());
         reembolsoEntity.setUsuarioEntity(usuarioLogadoEntity);
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.getTipo());
 
-        ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
-
-        ReembolsoDTO reembolsoDTO = convertEntityToDTO(savedEntity);
-        reembolsoDTO.setId_usuario(usuarioLogadoEntity.getIdUsuario());
+        ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoRepository.save(reembolsoEntity));
+        reembolsoDTO.setUsuario(usuarioService.entityToComposeDto(usuarioLogadoEntity));
 
         return reembolsoDTO;
     }
@@ -44,12 +41,12 @@ public class ReembolsoService {
     public ReembolsoDTO updateAdmin(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
 
-        reembolsoEntity = convertCreateTOEntity(reembolsoCreateDTO);
+        reembolsoEntity = createToEntity(reembolsoCreateDTO);
         reembolsoEntity.setData(LocalDateTime.now());
 
         ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
         log.info("Solicitacao de reembolso atualizado");
-        return convertEntityToDTO(savedEntity);
+        return entityToDTO(savedEntity);
     }
 
     public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
@@ -62,7 +59,7 @@ public class ReembolsoService {
             ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
             log.info("Solicitacao de reembolso APROVADO pelo GESTOR.");
 
-            return convertEntityToDTO(savedEntity);
+            return entityToDTO(savedEntity);
         } else {
             reembolsoEntity.setData(LocalDateTime.now());
             reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.getTipo());
@@ -70,7 +67,7 @@ public class ReembolsoService {
             ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
             log.info("Solicitacao de reembolso REPROVADO pelo GESTOR.");
 
-            return convertEntityToDTO(savedEntity);
+            return entityToDTO(savedEntity);
         }
     }
     public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
@@ -83,7 +80,7 @@ public class ReembolsoService {
             ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
             log.info("Solicitacao de reembolso FECHADO E PAGO pelo FINANCEIRO.");
 
-            return convertEntityToDTO(savedEntity);
+            return entityToDTO(savedEntity);
         } else {
             reembolsoEntity.setData(LocalDateTime.now());
             reembolsoEntity.setStatus(StatusReembolso.REPROVADO_FINANCEIRO.getTipo());
@@ -91,16 +88,15 @@ public class ReembolsoService {
             ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
             log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
 
-            return convertEntityToDTO(savedEntity);
+            return entityToDTO(savedEntity);
         }
     }
     public List<ReembolsoDTO> listAdmin() {
         return reembolsoRepository.findAll().stream()
-                .map(rb->{
-                    UsuarioEntity usuarioEntity = rb.getUsuarioEntity();
-                    ReembolsoDTO reembolsoDTO = new ReembolsoDTO();
-                    reembolsoDTO = convertEntityToDTO(rb);
-                    reembolsoDTO.setId_usuario(usuarioEntity.getIdUsuario());
+                .map(reembolsoEntity->{
+                    UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
+                    ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
+                    reembolsoDTO.setUsuario(usuarioService.entityToComposeDto(usuarioEntity));
                     return reembolsoDTO;
                 }).toList();
     }
@@ -114,32 +110,32 @@ public class ReembolsoService {
     //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
 
     public ReembolsoDTO updateProprio(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = getUsuarioLogadoEntity();
+        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         Set<ReembolsoEntity> proprioReembolsoEntitySet = usuarioEntity.getReembolsoEntities();
 
         if (proprioReembolsoEntitySet.stream().anyMatch(reemb -> reemb.getIdReembolso().equals(idReembolso))) {
 
             ReembolsoEntity reembolsoEntity = reembolsoRepository.findById(idReembolso).get();
 
-            reembolsoEntity = convertCreateTOEntity(reembolsoCreateDTO);
+            reembolsoEntity = createToEntity(reembolsoCreateDTO);
             reembolsoEntity.setData(LocalDateTime.now());
 
             ReembolsoEntity savedEntity = reembolsoRepository.save(reembolsoEntity);
             log.info("Solicitacao de reembolso atualizado");
-            return convertEntityToDTO(savedEntity);
+            return entityToDTO(savedEntity);
         } else {
             throw new RegraDeNegocioException("Reembolso informado nao pertence ao usuario logado");
         }
     }
 
     public Set<ReembolsoEntity> listProprio() throws RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = getUsuarioLogadoEntity();
+        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         Set<ReembolsoEntity> proprioReembolsoEntity = usuarioEntity.getReembolsoEntities();
         return proprioReembolsoEntity;
     }
 
     public void deleteProprio(Integer idReembolso) throws RegraDeNegocioException {
-        UsuarioEntity usuarioEntity = getUsuarioLogadoEntity();
+        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         Set<ReembolsoEntity> proprioReembolsoEntitySet = usuarioEntity.getReembolsoEntities();
 
         if (proprioReembolsoEntitySet.stream().anyMatch(reemb -> reemb.getIdReembolso().equals(idReembolso))) {
@@ -156,17 +152,11 @@ public class ReembolsoService {
 
     //  ===================== METODOS AUXILIARES ====================
 
-    private ReembolsoEntity convertCreateTOEntity(ReembolsoCreateDTO reembolsoCreateDTO) {
+    private ReembolsoEntity createToEntity(ReembolsoCreateDTO reembolsoCreateDTO) {
         return objectMapper.convertValue(reembolsoCreateDTO, ReembolsoEntity.class);
     }
 
-    private ReembolsoDTO convertEntityToDTO(ReembolsoEntity reembolsoEntity) {
+    private ReembolsoDTO entityToDTO(ReembolsoEntity reembolsoEntity) {
         return objectMapper.convertValue(reembolsoEntity, ReembolsoDTO.class);
-    }
-
-    private UsuarioEntity getUsuarioLogadoEntity() throws RegraDeNegocioException {
-        Integer idUsuarioLogado = usuarioService.getIdLoggedUser();
-        UsuarioEntity usuarioLogadoEntity = usuarioService.findById(idUsuarioLogado);
-        return usuarioLogadoEntity;
     }
 }

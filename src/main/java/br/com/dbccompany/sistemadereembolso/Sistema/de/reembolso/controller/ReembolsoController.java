@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-//@RestController
-//@RequestMapping("/solicitacoes")
+@RestController
+@RequestMapping("/reembolso")
 @RequiredArgsConstructor
-//@Validated
+@Validated
 public class ReembolsoController {
     private final ReembolsoService reembolsoService;
 

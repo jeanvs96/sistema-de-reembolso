@@ -48,7 +48,7 @@ public class UsuarioEntity implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "usuarioEntity",
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
+            cascade = CascadeType.MERGE)
     private Set<ReembolsoEntity> reembolsoEntities;
 
     @Override

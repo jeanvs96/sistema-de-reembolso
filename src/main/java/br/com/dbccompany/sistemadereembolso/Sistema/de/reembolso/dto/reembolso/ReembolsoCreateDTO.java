@@ -13,7 +13,7 @@ public class ReembolsoCreateDTO {
     @NotNull
     private Double valor;
 
-    @Schema(example = "Título")
+    @Schema(example = "Transporte para reunião com cliente")
     @NotBlank
     private String titulo;
 
