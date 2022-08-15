@@ -7,7 +7,6 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenS
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -22,7 +21,7 @@ public class LoginService {
     public String login(UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException {
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
-                        usuarioLoginDTO.getLogin(),
+                        usuarioLoginDTO.getEmail(),
                         usuarioLoginDTO.getSenha()
                 );
 

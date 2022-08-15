@@ -11,7 +11,7 @@ public class UsuarioLoginDTO {
     @Schema(example = "seuemail@dbccompany.com.br")
     @NotNull
     @Email
-    private String login;
+    private String email;
 
     @Schema(example = "123")
     @NotNull

@@ -7,9 +7,11 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.AtivarDes
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,28 +24,35 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Slf4j
 public class UsuarioService {
+    @Value("${jwt.expiration}")
+    private String expiration;
     private static final String EMAIL_HOST = "dbccompany.com.br";
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final RolesService rolesService;
     private final UsuarioRolesService usuarioRolesService;
+    private final TokenService tokenService;
 
 
-
-    public UsuarioDTO saveUsuario(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+    public String save(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         verificarHostEmail(usuarioCreateDTO.getEmail());
         verificarSeEmailExiste(usuarioCreateDTO.getEmail());
 
         UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
 
         usuarioEntity.setStatus(true);
+        usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(TipoRoles.COLABORADOR.getTipo())));
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
         log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
 
-        return entityToDto(usuarioSalvo);
+        UsuarioLoginDTO usuarioLoginDTO = new UsuarioLoginDTO();
+        usuarioLoginDTO.setEmail(usuarioCreateDTO.getEmail());
+        usuarioLoginDTO.setSenha(usuarioCreateDTO.getSenha());
+
+        return tokenService.getToken(usuarioSalvo, expiration);
     }
 
     public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException {
@@ -186,5 +195,9 @@ public class UsuarioService {
 
     public UsuarioComposeDTO entityToComposeDto(UsuarioEntity usuarioEntity) {
         return objectMapper.convertValue(usuarioEntity, UsuarioComposeDTO.class);
+    }
+
+    public UsuarioLoginDTO createToLogin(UsuarioCreateDTO usuarioCreateDTO) {
+        return objectMapper.convertValue(usuarioCreateDTO, UsuarioLoginDTO.class);
     }
 }

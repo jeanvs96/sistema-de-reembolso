@@ -29,8 +29,8 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.saveUsuario(usuarioCreateDTO), HttpStatus.OK);
+    public ResponseEntity<String> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.save(usuarioCreateDTO), HttpStatus.OK);
     }
 
     @PostMapping("/role")
