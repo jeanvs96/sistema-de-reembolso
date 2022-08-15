@@ -28,7 +28,7 @@ public interface UsuarioDocumentation {
     @Operation(summary = "Autenticar usuário.", description = "Valida através da geração de um token a existência do par login/senha cadastrado no banco de dados.")
     public ResponseEntity<String> login(@RequestBody @Valid UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException;
 
-    @PostMapping("/cadastro-usuario")
+    @PostMapping("/cadastro")
     @ApiResponses(
             value = {
                     @ApiResponse(responseCode = "200", description = "Cadastro criado com sucesso."),
@@ -60,25 +60,25 @@ public interface UsuarioDocumentation {
     @Operation(summary = "Recuperar usuario logado.", description = "Recupera do banco o usuario logado.")
     public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException;
 
-    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Status do usuário alterado com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado,"),
-                    @ApiResponse(responseCode = "500", description = "Falha ao desativar/ativar usuário.")
-            }
-    )
-    @Operation(summary = "Ativar/Desativar usuario.", description = "Muda o status do usuário no banco de dados para Ativado ou Desativado.")
-    public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException;
-
-    @PutMapping("/update")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Não foi possível encontrar este usuário."),
-                    @ApiResponse(responseCode = "500", description = "Falha ao atualizar esses dados.")
-            }
-    )
-    @Operation(summary = "Atualizar usuário.", description = "Atualiza o usuário logado no banco de dados, podendo alterar um ou vários dados do usuário.")
-    public ResponseEntity<UsuarioDTO> updateUsuario(@RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException;
+//    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(responseCode = "200", description = "Status do usuário alterado com sucesso."),
+//                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado,"),
+//                    @ApiResponse(responseCode = "500", description = "Falha ao desativar/ativar usuário.")
+//            }
+//    )
+//    @Operation(summary = "Ativar/Desativar usuario.", description = "Muda o status do usuário no banco de dados para Ativado ou Desativado.")
+//    public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException;
+//
+//    @PutMapping("/update")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso."),
+//                    @ApiResponse(responseCode = "404", description = "Não foi possível encontrar este usuário."),
+//                    @ApiResponse(responseCode = "500", description = "Falha ao atualizar esses dados.")
+//            }
+//    )
+//    @Operation(summary = "Atualizar usuário.", description = "Atualiza o usuário logado no banco de dados, podendo alterar um ou vários dados do usuário.")
+//    public ResponseEntity<UsuarioDTO> updateUsuario(@RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException;
 }

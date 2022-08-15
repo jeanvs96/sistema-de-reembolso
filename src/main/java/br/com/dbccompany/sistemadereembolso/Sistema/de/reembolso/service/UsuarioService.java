@@ -1,9 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioRelatorioDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioUpdateDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.AtivarDesativarUsuario;
@@ -16,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -32,6 +27,7 @@ public class UsuarioService {
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
     private final RolesService rolesService;
+    private final UsuarioRolesService usuarioRolesService;
 
 
 
@@ -82,28 +78,24 @@ public class UsuarioService {
         log.info("Usuário "+ nome+ " com id: "+idUsuario+" foi deletado com sucesso!");
     }
 
-    @Transactional
     public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
         UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
         RolesEntity rolesEntity = rolesService.findByRole(role.getTipo());
-
+        usuarioRolesService.deleteAllByIdUsuario(idUsuario);
 
         Set<RolesEntity> setRoles = usuarioEntityRecuperado.getRolesEntities();
         setRoles.add(rolesEntity);
 
         usuarioEntityRecuperado.setRolesEntities(setRoles);
 
-
-//        usuarioEntityRecuperado.setRolesEntities(Set.of(rolesEntity));
-
-//        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
-//        }
+        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
+            usuarioEntityRecuperado.getRolesEntities().add(
+                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
+        }
 
         UsuarioEntity usuarioEntityAtualizado = usuarioRepository.save(usuarioEntityRecuperado);
         return entityToDto(usuarioEntityAtualizado);
@@ -117,15 +109,11 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    public UsuarioDTO getLoggedUser() throws RegraDeNegocioException {
-        try {
-            Integer idLoggedUser = getIdLoggedUser();
-            UsuarioEntity byId = findById(idLoggedUser);
-            return entityToDto(byId);
-        }catch (RegraDeNegocioException e){
-            throw new RegraDeNegocioException("Nao ha usuario logado"); // TODO - tratar melhor essa ClassCastException
-        }
+    public UsuarioDTO findUsuarioLogged() throws RegraDeNegocioException {
+        return entityToDto(getLoggedUser());
     }
+
+
 
     public List<UsuarioRelatorioDTO> listarUsuarios (){
         List<UsuarioRelatorioDTO> all = usuarioRepository.findAll().stream()
@@ -172,6 +160,11 @@ public class UsuarioService {
         }
     }
 
+    public UsuarioEntity getLoggedUser() throws RegraDeNegocioException {
+        Integer idLoggedUser = getIdLoggedUser();
+        UsuarioEntity usuarioEntity = findById(idLoggedUser);
+        return usuarioEntity;
+    }
     public Integer getIdLoggedUser() {
         Object principal = SecurityContextHolder
                 .getContext()
@@ -189,5 +182,9 @@ public class UsuarioService {
         usuarioEntity.setStatus(true);
         encodePassword(usuarioEntity);
         return usuarioEntity;
+    }
+
+    public UsuarioComposeDTO entityToComposeDto(UsuarioEntity usuarioEntity) {
+        return objectMapper.convertValue(usuarioEntity, UsuarioComposeDTO.class);
     }
 }
