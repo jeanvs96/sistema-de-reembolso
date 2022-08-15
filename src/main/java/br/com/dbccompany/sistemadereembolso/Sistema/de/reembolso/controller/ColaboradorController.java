@@ -4,9 +4,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.R
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioUpdateDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.LoginService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ReembolsoService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/colaborador")
@@ -36,14 +33,14 @@ public class ColaboradorController {
         return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
     }
 
-    @GetMapping("/reembolso/listar")      // TODO - fazer relatorio paginado
-    public ResponseEntity<Set<ReembolsoEntity>> listProprio() throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.listProprio(), HttpStatus.OK);
-    }
+//    @GetMapping("/reembolso/logged")      // TODO - fazer relatorio paginado
+//    public ResponseEntity<Set<ReembolsoEntity>> listProprio() throws RegraDeNegocioException {
+//        return new ResponseEntity<>(reembolsoService.listByLoggedUser(), HttpStatus.OK);
+//    }
 
     @PutMapping("/reembolso/update/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateProprio(@PathVariable("idReembolso") Integer idReembolso , @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.updateProprio(idReembolso, reembolsoCreateDTO), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(reembolsoService.updateByLoggedUser(idReembolso, reembolsoCreateDTO), HttpStatus.ACCEPTED);
     }
     @DeleteMapping("/reembolso/delete/{idReembolso}")
     public void deleteProprio(@PathVariable("idReembolso") Integer idReembolso) throws RegraDeNegocioException {

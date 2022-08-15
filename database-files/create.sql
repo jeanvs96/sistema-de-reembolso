@@ -46,7 +46,7 @@ create table reembolso(
 	id_reembolso bigint not null,
 	titulo text not null,
 	valor double precision not null,
-	status text not null, 
+	status integer not null,
 	data_entrada timestamp not null,
 	anexo bytea not null,
 	id_usuario bigint not null,

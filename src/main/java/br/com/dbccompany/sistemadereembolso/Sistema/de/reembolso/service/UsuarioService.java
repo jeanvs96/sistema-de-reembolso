@@ -97,14 +97,14 @@ public class UsuarioService {
 
         usuarioEntityRecuperado.setRolesEntities(setRoles);
 
-        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
-            usuarioEntityRecuperado.getRolesEntities().add(
-                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
-        }
+//        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
+//            usuarioEntityRecuperado.getRolesEntities().add(
+//                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
+//        }
 
         UsuarioEntity usuarioEntityAtualizado = usuarioRepository.save(usuarioEntityRecuperado);
         return entityToDto(usuarioEntityAtualizado);

@@ -26,7 +26,7 @@ public class ReembolsoEntity {
     private Double valor;
 
     @Column(name = "status")
-    private String status;
+    private Integer status;
 
     @Column(name = "titulo")
     private String titulo;
