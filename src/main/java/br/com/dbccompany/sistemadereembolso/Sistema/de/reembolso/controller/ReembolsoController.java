@@ -40,8 +40,8 @@ public class ReembolsoController {
     }
     //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
     @GetMapping("/logged")
-    public ResponseEntity<List<ReembolsoDTO>> findAllByLoggedUser() throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.listByLoggedUser(), HttpStatus.OK);
+    public ResponseEntity<PageDTO<ReembolsoDTO>> findAllByLoggedUser(Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        return new ResponseEntity<>(reembolsoService.listByLoggedUser(pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
     @PutMapping("/updateProprio/{idReembolso}")

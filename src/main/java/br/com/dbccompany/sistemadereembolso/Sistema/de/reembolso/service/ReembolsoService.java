@@ -99,12 +99,13 @@ public class ReembolsoService {
     }
 
     public PageDTO<ReembolsoDTO> findAllReembolsos(Integer pagina, Integer quantidadeDeRegistros) {
-        List<ReembolsoDTO> reembolsoDTOS = reembolsoRepository.findAllByOrderByStatusAscDataAsc().stream()
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        Page<ReembolsoEntity> page = reembolsoRepository.findAllByOrderByStatusAscDataAsc(pageable);
+        List<ReembolsoDTO> reembolsoDTOS = page.stream()
                 .map(reembolsoEntity -> {
                     ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
                     return reembolsoDTO;
                 }).toList();
-        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOS);
         return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
     }
 
@@ -128,11 +129,15 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public List<ReembolsoDTO> listByLoggedUser() throws RegraDeNegocioException {
-        List<ReembolsoDTO> reembolsoDTOS = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataAsc(usuarioService.getLoggedUser())
-                .stream()
-                .map(reembolsoEntity -> entityToDTO(reembolsoEntity)).toList();
-        return reembolsoDTOS;
+    public PageDTO<ReembolsoDTO> listByLoggedUser(Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        Page<ReembolsoEntity> page = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataAsc(usuarioService.getLoggedUser(), pageable);
+        List<ReembolsoDTO> reembolsoDTOS = page.stream()
+                .map(reembolsoEntity -> {
+                    ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
+                    return reembolsoDTO;
+                }).toList();
+        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
     }
 
     public void deleteProprio(Integer idReembolso) throws RegraDeNegocioException {
