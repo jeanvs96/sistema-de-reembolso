@@ -21,12 +21,12 @@ public class ReembolsoController {
     private final ReembolsoService reembolsoService;
 
     @PostMapping("/create")
-    public ResponseEntity<ReembolsoDTO> createSolicitacao(@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
+    public ResponseEntity<ReembolsoDTO> create(@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
     }
-    @GetMapping("/listAdmin")
-    public ResponseEntity<List<ReembolsoDTO>> listAdmin(){
-        return new ResponseEntity<>(reembolsoService.listAdmin(), HttpStatus.OK);
+    @GetMapping("/list")
+    public ResponseEntity<List<ReembolsoDTO>> listAll(){
+        return new ResponseEntity<>(reembolsoService.findAll(), HttpStatus.OK);
     }
     @PutMapping("/updateAdmin/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateAdmin(@PathVariable("idReembolso") Integer idReembolso ,@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
@@ -38,7 +38,7 @@ public class ReembolsoController {
     }
     //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
     @GetMapping("/logged")
-    public ResponseEntity<List<ReembolsoEntity>> findAllByLoggedUser() throws RegraDeNegocioException {
+    public ResponseEntity<List<ReembolsoDTO>> findAllByLoggedUser() throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.listByLoggedUser(), HttpStatus.OK);
     }
 

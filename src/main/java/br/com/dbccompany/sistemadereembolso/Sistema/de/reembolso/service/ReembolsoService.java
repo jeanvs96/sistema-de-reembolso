@@ -93,12 +93,10 @@ public class ReembolsoService {
         }
     }
 
-    public List<ReembolsoDTO> listAdmin() {
-        return reembolsoRepository.findAll().stream()
+    public List<ReembolsoDTO> findAll() {
+        return reembolsoRepository.findAllByOrderByStatusAscDataAsc().stream()
                 .map(reembolsoEntity -> {
-                    UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
                     ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
-                    reembolsoDTO.setUsuario(usuarioService.entityToComposeDto(usuarioEntity));
                     return reembolsoDTO;
                 }).toList();
     }
@@ -123,9 +121,11 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public List<ReembolsoEntity> listByLoggedUser() throws RegraDeNegocioException {
-        List<ReembolsoEntity> reembolsoEntities = reembolsoRepository.findAllByUsuarioEntityOrderByData(usuarioService.getLoggedUser());
-        return reembolsoEntities;
+    public List<ReembolsoDTO> listByLoggedUser() throws RegraDeNegocioException {
+        List<ReembolsoDTO> reembolsoDTOS = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataAsc(usuarioService.getLoggedUser())
+                .stream()
+                .map(reembolsoEntity -> entityToDTO(reembolsoEntity)).toList();
+        return reembolsoDTOS;
     }
 
     public void deleteProprio(Integer idReembolso) throws RegraDeNegocioException {
@@ -155,6 +155,9 @@ public class ReembolsoService {
     }
 
     private ReembolsoDTO entityToDTO(ReembolsoEntity reembolsoEntity) {
-        return objectMapper.convertValue(reembolsoEntity, ReembolsoDTO.class);
+        ReembolsoDTO reembolsoDTO = objectMapper.convertValue(reembolsoEntity, ReembolsoDTO.class);
+        reembolsoDTO.setUsuario(usuarioService.entityToComposeDto(reembolsoEntity.getUsuarioEntity()));
+        reembolsoDTO.setStatusDoReembolso(StatusReembolso.values()[reembolsoEntity.getStatus()].getTipo());
+        return reembolsoDTO;
     }
 }

@@ -21,7 +21,7 @@ public class FinanceiroController {
 
     @GetMapping("/listAdmin") //    TODO - fazer listagem reembolsos somente com status "aprovado_gestor"
     public ResponseEntity<List<ReembolsoDTO>> listAdmin() {
-        return new ResponseEntity<>(reembolsoService.listAdmin(), HttpStatus.OK);
+        return new ResponseEntity<>(reembolsoService.findAll(), HttpStatus.OK);
     }
 
     @PutMapping("/pagar/{idReembolso}")

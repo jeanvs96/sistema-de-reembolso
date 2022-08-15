@@ -11,7 +11,7 @@ public class ReembolsoDTO {
     private Integer idReembolso;
     private LocalDateTime data;
     private Double valor;
-    private Integer status;
+    private String statusDoReembolso;
     private String titulo;
     private Byte[] anexo;
     private UsuarioComposeDTO usuario;

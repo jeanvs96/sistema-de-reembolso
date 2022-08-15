@@ -29,7 +29,7 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((auth) ->
-                        auth.antMatchers("/usuario/logged", "/reembolso/create")       // TODO - remover a autorização geral usada para fins de implementação
+                        auth.antMatchers("/usuario/logged", "/reembolso/create", "/**")       // TODO - remover a autorização geral usada para fins de implementação
                                 .permitAll()
                                 .antMatchers("/usuario/role").hasRole("ADMIN")
                                 .antMatchers("/usuario/ativar-desativar-usuario/{idUsuario}").hasRole("ADMIN")
