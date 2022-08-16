@@ -48,7 +48,8 @@ public class SecurityConfiguration {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/usuario/login",
-                "/usuario/cadastro");
+                "/usuario/cadastro",
+                "/**");
     }
 
     @Bean
@@ -58,7 +59,8 @@ public class SecurityConfiguration {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedMethods("*")
-                        .exposedHeaders("Authorization");
+                        .exposedHeaders("Authorization")
+                        .allowedOrigins("localhost:8080");
             }
         };
     }

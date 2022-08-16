@@ -2,6 +2,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioComposeDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ArquivoEntity;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,6 +14,6 @@ public class ReembolsoDTO {
     private Double valor;
     private String statusDoReembolso;
     private String titulo;
-    private Byte[] anexo;
+    private ArquivoEntity arquivoEntity;
     private UsuarioComposeDTO usuario;
 }

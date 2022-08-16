@@ -17,6 +17,4 @@ public class ReembolsoCreateDTO {
     @NotBlank
     private String titulo;
 
-    @Schema(example = "[]")
-    private Byte[] anexo;
 }

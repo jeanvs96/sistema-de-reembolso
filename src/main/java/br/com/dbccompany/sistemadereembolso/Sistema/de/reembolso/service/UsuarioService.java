@@ -71,9 +71,6 @@ public class UsuarioService {
         if (usuarioUpdateDTO.getNome() != null) {
             usuarioEntityRecuperado.setNome(usuarioUpdateDTO.getNome());
         }
-        if (usuarioUpdateDTO.getFoto() != null) {
-            usuarioEntityRecuperado.setFoto(usuarioEntityRecuperado.getFoto());
-        }
 
         return entityToDto(usuarioRepository.save(usuarioEntityRecuperado));
     }

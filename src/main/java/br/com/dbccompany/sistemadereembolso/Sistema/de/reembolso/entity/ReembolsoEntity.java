@@ -39,4 +39,9 @@ public class ReembolsoEntity {
             cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     private UsuarioEntity usuarioEntity;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "anexo_id_arquivos", referencedColumnName = "id_arquivos")
+    private ArquivoEntity arquivoEntity;
 }

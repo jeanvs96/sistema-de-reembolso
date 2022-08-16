@@ -30,11 +30,13 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "senha")
     private String senha;
 
-    @Column(name = "foto")
-    private Byte[] foto;
-
     @Column(name = "status")
     private Boolean status;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "foto_id_arquivos", referencedColumnName = "id_arquivos")
+    private ArquivoEntity arquivoEntity;
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
