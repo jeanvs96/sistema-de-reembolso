@@ -8,5 +8,6 @@ public class UsuarioDTO {
     private Integer idUsuario;
     private String nome;
     private String email;
+    private Double valorTotal;
     private ArquivoEntity arquivoEntity;
 }

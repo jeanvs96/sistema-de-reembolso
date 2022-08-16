@@ -30,6 +30,9 @@ public class UsuarioEntity implements UserDetails {
     @Column(name = "senha")
     private String senha;
 
+    @Column(name = "valor_total")
+    private Double valorFinal;
+
     @Column(name = "status")
     private Boolean status;
 

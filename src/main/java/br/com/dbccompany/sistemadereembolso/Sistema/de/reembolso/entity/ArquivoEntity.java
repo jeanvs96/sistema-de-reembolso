@@ -24,7 +24,6 @@ public class ArquivoEntity {
     private String tipo;
 
     @Column(name = "data")
-    @Lob
     private byte[] data;
 
     @OneToOne(mappedBy = "arquivoEntity")
