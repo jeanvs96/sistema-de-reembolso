@@ -12,17 +12,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/solicitacoes")
+@RequestMapping("/gestor")
 @RequiredArgsConstructor
 @Validated
 public class GestorController {
     private final ReembolsoService reembolsoService;
-
-
-//    @GetMapping("/listAdmin") //    TODO - fazer listagem reembolsos somente com status "aberto"
-//    public ResponseEntity<List<ReembolsoDTO>> listAdmin() {
-//        return new ResponseEntity<>(reembolsoService.findAll(), HttpStatus.OK);
-//    }
 
     @PutMapping("/aprovar/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateAprovar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean aprovado) throws RegraDeNegocioException {
