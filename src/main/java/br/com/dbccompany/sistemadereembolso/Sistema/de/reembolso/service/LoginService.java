@@ -1,7 +1,9 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginComSucessoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +19,9 @@ public class LoginService {
     private String expiration;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
-    public String login(UsuarioLoginDTO usuarioLoginDTO) {
+    private final UsuarioService usuarioService;
+    public UsuarioLoginComSucessoDTO login(UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException {
+        usuarioService.verificarHostEmail(usuarioLoginDTO.getEmail());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         usuarioLoginDTO.getEmail(),
@@ -26,6 +30,11 @@ public class LoginService {
 
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
-        return tokenService.getToken((UsuarioEntity) authentication.getPrincipal(), expiration);
+        UsuarioEntity usuarioEntity = (UsuarioEntity) authentication.getPrincipal();
+        UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
+        usuarioLoginComSucessoDTO.setRole(usuarioEntity.getRolesEntities().stream().findFirst().get().getNome());
+        usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioEntity, expiration));
+
+        return usuarioLoginComSucessoDTO;
     }
 }

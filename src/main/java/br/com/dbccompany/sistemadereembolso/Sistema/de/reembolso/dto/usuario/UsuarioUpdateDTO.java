@@ -13,6 +13,4 @@ public class UsuarioUpdateDTO {
 
     @Schema(example = "Su@Senha!23")
     private String senha;
-
-    private Byte[] foto;
 }

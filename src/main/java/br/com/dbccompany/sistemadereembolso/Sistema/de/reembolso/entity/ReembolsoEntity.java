@@ -26,7 +26,7 @@ public class ReembolsoEntity {
     private Double valor;
 
     @Column(name = "status")
-    private String status;
+    private Integer status;
 
     @Column(name = "titulo")
     private String titulo;
@@ -36,4 +36,9 @@ public class ReembolsoEntity {
             cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     private UsuarioEntity usuarioEntity;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id_anexos", referencedColumnName = "id_anexos")
+    private AnexosEntity anexosEntity;
 }
