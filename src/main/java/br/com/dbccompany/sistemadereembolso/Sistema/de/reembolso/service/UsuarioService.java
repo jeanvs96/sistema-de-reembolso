@@ -160,7 +160,7 @@ public class UsuarioService {
         }
     }
 
-    private void verificarHostEmail(String email) throws RegraDeNegocioException {
+    public void verificarHostEmail(String email) throws RegraDeNegocioException {
         String[] emailSplit = email.split("@");
         if (!EMAIL_HOST.equals(emailSplit[1])){
             throw new RegraDeNegocioException("Insira uma email DBC válido");
