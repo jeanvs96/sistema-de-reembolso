@@ -19,7 +19,9 @@ public class LoginService {
     private String expiration;
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
+    private final UsuarioService usuarioService;
     public UsuarioLoginComSucessoDTO login(UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException {
+        usuarioService.verificarHostEmail(usuarioLoginDTO.getEmail());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         usuarioLoginDTO.getEmail(),

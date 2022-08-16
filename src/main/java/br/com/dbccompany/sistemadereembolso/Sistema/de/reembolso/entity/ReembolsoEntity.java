@@ -31,12 +31,14 @@ public class ReembolsoEntity {
     @Column(name = "titulo")
     private String titulo;
 
-    @Column(name = "anexo")
-    private Byte[] anexo;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.MERGE)
     @JoinColumn(name = "id_usuario", referencedColumnName = "id_usuario")
     private UsuarioEntity usuarioEntity;
+
+    @JsonIgnore
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id_anexos", referencedColumnName = "id_anexos")
+    private AnexosEntity anexosEntity;
 }

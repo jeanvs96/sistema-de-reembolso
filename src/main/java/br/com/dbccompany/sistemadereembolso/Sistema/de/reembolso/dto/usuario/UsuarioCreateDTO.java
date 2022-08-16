@@ -21,7 +21,4 @@ public class UsuarioCreateDTO {
     @Schema(example = "Sua@Senha!23")
     @NotBlank
     private String senha;
-
-    @Schema(example = "[]")
-    private Byte[] foto;
 }

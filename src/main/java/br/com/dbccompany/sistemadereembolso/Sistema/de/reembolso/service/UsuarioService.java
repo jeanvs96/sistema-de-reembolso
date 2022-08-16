@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
@@ -70,9 +71,6 @@ public class UsuarioService {
         }
         if (usuarioUpdateDTO.getNome() != null) {
             usuarioEntityRecuperado.setNome(usuarioUpdateDTO.getNome());
-        }
-        if (usuarioUpdateDTO.getFoto() != null) {
-            usuarioEntityRecuperado.setFoto(usuarioEntityRecuperado.getFoto());
         }
 
         return entityToDto(usuarioRepository.save(usuarioEntityRecuperado));
@@ -162,7 +160,7 @@ public class UsuarioService {
         }
     }
 
-    private void verificarHostEmail(String email) throws RegraDeNegocioException {
+    public void verificarHostEmail(String email) throws RegraDeNegocioException {
         String[] emailSplit = email.split("@");
         if (!EMAIL_HOST.equals(emailSplit[1])){
             throw new RegraDeNegocioException("Insira uma email DBC válido");
@@ -183,7 +181,9 @@ public class UsuarioService {
     }
 
     public UsuarioDTO entityToDto(UsuarioEntity usuarioEntity) {
-        return objectMapper.convertValue(usuarioEntity, UsuarioDTO.class);
+        UsuarioDTO usuarioDTO = objectMapper.convertValue(usuarioEntity, UsuarioDTO.class);
+        usuarioDTO.setFotoDTO(objectMapper.convertValue(usuarioEntity.getFotosEntity(), FotoDTO.class));
+        return usuarioDTO;
     }
 
     public UsuarioEntity createToEntity(UsuarioCreateDTO usuarioCreateDTO) {
