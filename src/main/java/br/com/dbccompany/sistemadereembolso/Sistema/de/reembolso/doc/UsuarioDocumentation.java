@@ -35,18 +35,18 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Cadastrar usuário.", description = "Cadastra um usuário no banco de dados, com uma ou mais roles(ADMIN, GESTOR, FINANCEIRO, COLABORADOR).")
-    public ResponseEntity<String> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
+    public ResponseEntity<UsuarioLoginComSucessoDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
 
-    @PostMapping("/role")
-    @ApiResponses(
-            value = {
-                    @ApiResponse(responseCode = "200", description = "Role atribuidad com sucesso."),
-                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
-                    @ApiResponse(responseCode = "500", description = "Erro ao criar cadastro.")
-            }
-    )
-    @Operation(summary = "Atualiza role do usuário.", description = "Altera a role (ADMIN, GESTOR, FINANCEIRO, COLABORADOR) do usuário pelo ID, caso seja passada a role ADMIN, todas as roles serão atribuídas.")
-    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException;
+//    @PostMapping("/role")
+//    @ApiResponses(
+//            value = {
+//                    @ApiResponse(responseCode = "200", description = "Role atribuidad com sucesso."),
+//                    @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
+//                    @ApiResponse(responseCode = "500", description = "Erro ao criar cadastro.")
+//            }
+//    )
+//    @Operation(summary = "Atualiza role do usuário.", description = "Altera a role (ADMIN, GESTOR, FINANCEIRO, COLABORADOR) do usuário pelo ID, caso seja passada a role ADMIN, todas as roles serão atribuídas.")
+//    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException;
     @GetMapping("/logged")
     @ApiResponses(
             value = {

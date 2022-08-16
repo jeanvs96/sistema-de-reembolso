@@ -29,13 +29,8 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<String> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+    public ResponseEntity<UsuarioLoginComSucessoDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.save(usuarioCreateDTO), HttpStatus.OK);
-    }
-
-    @PostMapping("/role")
-    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.atribuirRole(idUsuario, role), HttpStatus.OK);
     }
 
     @GetMapping("/logged")

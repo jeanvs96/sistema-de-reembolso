@@ -35,7 +35,7 @@ public class UsuarioService {
     private final TokenService tokenService;
 
 
-    public String save(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
+    public UsuarioLoginComSucessoDTO save(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
         verificarHostEmail(usuarioCreateDTO.getEmail());
         verificarSeEmailExiste(usuarioCreateDTO.getEmail());
 
@@ -48,11 +48,11 @@ public class UsuarioService {
 
         log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
 
-        UsuarioLoginDTO usuarioLoginDTO = new UsuarioLoginDTO();
-        usuarioLoginDTO.setEmail(usuarioCreateDTO.getEmail());
-        usuarioLoginDTO.setSenha(usuarioCreateDTO.getSenha());
+        UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
+        usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioSalvo, expiration));
+        usuarioLoginComSucessoDTO.setRole(usuarioSalvo.getRolesEntities().stream().findFirst().get().getNome());
 
-        return tokenService.getToken(usuarioSalvo, expiration);
+        return usuarioLoginComSucessoDTO;
     }
 
     public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException {

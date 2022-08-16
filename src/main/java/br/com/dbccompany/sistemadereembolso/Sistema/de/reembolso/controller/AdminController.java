@@ -25,7 +25,7 @@ public class AdminController {
         return new ResponseEntity<>(usuarioService.saveByAdmin(usuarioCreateDTO, role), HttpStatus.OK);
     }
 
-    @PostMapping("/role")
+    @PostMapping("/atribuir/role")
     public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
         return new ResponseEntity<>(usuarioService.atribuirRole(idUsuario, role), HttpStatus.OK);
     }
