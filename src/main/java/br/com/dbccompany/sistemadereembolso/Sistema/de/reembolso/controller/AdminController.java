@@ -21,8 +21,8 @@ public class AdminController {
     private final UsuarioService usuarioService;
 
     @PostMapping("/cadastro")
-    public ResponseEntity<String> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.save(usuarioCreateDTO), HttpStatus.OK);
+    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.saveByAdmin(usuarioCreateDTO, role), HttpStatus.OK);
     }
 
     @PostMapping("/role")

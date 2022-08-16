@@ -200,4 +200,20 @@ public class UsuarioService {
     public UsuarioLoginDTO createToLogin(UsuarioCreateDTO usuarioCreateDTO) {
         return objectMapper.convertValue(usuarioCreateDTO, UsuarioLoginDTO.class);
     }
+
+    public UsuarioDTO saveByAdmin(UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException {
+        verificarHostEmail(usuarioCreateDTO.getEmail());
+        verificarSeEmailExiste(usuarioCreateDTO.getEmail());
+
+        UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
+
+        usuarioEntity.setStatus(true);
+        usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(role.getTipo())));
+
+        UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
+
+        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
+
+        return entityToDto(usuarioEntity);
+    }
 }
