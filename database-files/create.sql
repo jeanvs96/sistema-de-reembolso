@@ -18,7 +18,7 @@ create table usuario (
                          nome text not null,
                          senha text not null,
                          email text not null unique,
-                         valor_total double precision not null,
+                         valor_total double precision,
                          foto_id_arquivos bigint,
                          status boolean not null,
                          primary key(id_usuario),
