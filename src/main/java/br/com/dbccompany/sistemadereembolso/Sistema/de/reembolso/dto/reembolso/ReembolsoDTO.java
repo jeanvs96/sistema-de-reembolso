@@ -1,7 +1,7 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioComposeDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ArquivoEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,6 +12,6 @@ public class ReembolsoDTO {
     private Double valor;
     private String statusDoReembolso;
     private String titulo;
-    private ArquivoEntity arquivoEntity;
+    private FotosEntity arquivoEntity;
     private UsuarioComposeDTO usuario;
 }

@@ -1,15 +1,15 @@
 --create schema sistema_de_reembolso
 
-create table arquivos(
-                         id_arquivos bigint not null,
-                         nome text not null,
-                         tipo text not null,
-                         data bytea not null,
-                         primary key(id_arquivos)
+create table fotos (
+                       id_fotos bigint not null,
+                       nome text not null,
+                       tipo text not null,
+                       data bytea not null,
+                       primary key(id_fotos)
 
 );
 
-create sequence seq_arquivos
+create sequence seq_fotos
     increment 1
 start 1;
 
@@ -19,12 +19,12 @@ create table usuario (
                          senha text not null,
                          email text not null unique,
                          valor_total double precision,
-                         foto_id_arquivos bigint,
+                         id_fotos bigint,
                          status boolean not null,
                          primary key(id_usuario),
-                         constraint fk_usuario_arquivos
-                             foreign key (foto_id_arquivos)
-                                 references arquivos(id_arquivos)
+                         constraint fk_usuario_fotos
+                             foreign key (id_fotos)
+                                 references fotos(id_fotos)
 );
 
 create sequence seq_usuario
@@ -58,6 +58,18 @@ create table usuario_roles(
                                       references roles(id_roles)
 );
 
+create table anexos (
+                        id_anexos bigint not null,
+                        nome text not null,
+                        tipo text not null,
+                        data bytea not null,
+                        primary key(id_anexos)
+
+);
+
+create sequence seq_anexos
+    increment 1
+start 1;
 
 create table reembolso(
                           id_reembolso bigint not null,
@@ -65,17 +77,19 @@ create table reembolso(
                           valor double precision not null,
                           status integer not null,
                           data_entrada timestamp not null,
-                          anexo_id_arquivos bigint not null,
+                          id_anexos bigint not null,
                           id_usuario bigint not null,
                           primary key (id_reembolso),
                           constraint fk_reembolso_id_usuario
                               foreign key (id_usuario)
                                   references usuario(id_usuario),
-                          constraint fk_reembolso_arquivos
-                              foreign key (anexo_id_arquivos)
-                                  references arquivos(id_arquivos)
+                          constraint fk_reembolso_anexos
+                              foreign key (id_anexos)
+                                  references anexos(id_anexos)
 );
 
 create sequence seq_reembolso
     increment 1
 start 1;
+
+

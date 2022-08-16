@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
@@ -180,7 +181,9 @@ public class UsuarioService {
     }
 
     public UsuarioDTO entityToDto(UsuarioEntity usuarioEntity) {
-        return objectMapper.convertValue(usuarioEntity, UsuarioDTO.class);
+        UsuarioDTO usuarioDTO = objectMapper.convertValue(usuarioEntity, UsuarioDTO.class);
+        usuarioDTO.setFotoDTO(objectMapper.convertValue(usuarioEntity.getFotosEntity(), FotoDTO.class));
+        return usuarioDTO;
     }
 
     public UsuarioEntity createToEntity(UsuarioCreateDTO usuarioCreateDTO) {

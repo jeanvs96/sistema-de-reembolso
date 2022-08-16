@@ -31,9 +31,6 @@ public class ReembolsoEntity {
     @Column(name = "titulo")
     private String titulo;
 
-    @Column(name = "anexo")
-    private Byte[] anexo;
-
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY,
             cascade = CascadeType.MERGE)
@@ -41,7 +38,7 @@ public class ReembolsoEntity {
     private UsuarioEntity usuarioEntity;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "anexo_id_arquivos", referencedColumnName = "id_arquivos")
-    private ArquivoEntity arquivoEntity;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @JoinColumn(name = "id_anexos", referencedColumnName = "id_anexos")
+    private AnexosEntity anexosEntity;
 }

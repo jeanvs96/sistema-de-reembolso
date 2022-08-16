@@ -1,6 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ArquivoEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
 import lombok.Data;
 
 @Data
@@ -9,5 +9,5 @@ public class UsuarioDTO {
     private String nome;
     private String email;
     private Double valorTotal;
-    private ArquivoEntity arquivoEntity;
+    private FotoDTO fotoDTO;
 }

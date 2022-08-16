@@ -3,19 +3,20 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
-@Table(name = "arquivos")
+@Table(name = "anexos")
 @Getter
 @Setter
 @RequiredArgsConstructor
-public class ArquivoEntity {
+public class AnexosEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "arquivos_seq")
-    @SequenceGenerator(name = "arquivos_seq", sequenceName = "seq_arquivos", allocationSize = 1)
-    @Column(name = "id_arquivos")
-    private Integer idArquivos;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "anexos_seq")
+    @SequenceGenerator(name = "anexos_seq", sequenceName = "seq_anexos", allocationSize = 1)
+    @Column(name = "id_anexos")
+    private Integer idAnexos;
 
     @Column(name = "nome")
     private String nome;
@@ -26,9 +27,6 @@ public class ArquivoEntity {
     @Column(name = "data")
     private byte[] data;
 
-    @OneToOne(mappedBy = "arquivoEntity")
-    private UsuarioEntity usuarioEntity;
-
-    @OneToOne(mappedBy = "arquivoEntity")
+    @OneToOne(mappedBy = "anexosEntity")
     private ReembolsoEntity reembolsoEntity;
 }
