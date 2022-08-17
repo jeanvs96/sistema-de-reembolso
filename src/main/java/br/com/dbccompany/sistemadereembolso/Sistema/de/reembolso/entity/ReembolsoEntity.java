@@ -20,7 +20,10 @@ public class ReembolsoEntity {
     private Integer idReembolso;
 
     @Column(name = "data_entrada")
-    private LocalDateTime data;
+    private LocalDateTime dataEntrada;
+
+    @Column(name = "data_ultima_alteracao")
+    private LocalDateTime dataUltimaAlteracao;
 
     @Column(name = "valor")
     private Double valor;

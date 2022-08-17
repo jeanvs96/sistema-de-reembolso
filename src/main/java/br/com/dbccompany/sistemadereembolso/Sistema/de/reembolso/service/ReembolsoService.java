@@ -10,6 +10,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioE
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ import java.util.List;
 public class ReembolsoService {
     private final ReembolsoRepository reembolsoRepository;
     private final UsuarioService usuarioService;
+    private final UsuarioRepository usuarioRepository;
     private final EmailService emailService;
     private final ObjectMapper objectMapper;
 
@@ -32,11 +34,14 @@ public class ReembolsoService {
         UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
 
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
-        reembolsoEntity.setData(LocalDateTime.now());
+        reembolsoEntity.setDataEntrada(LocalDateTime.now());
         reembolsoEntity.setUsuarioEntity(usuarioLogadoEntity);
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
 
         ReembolsoEntity reembolsoSavedEntity = reembolsoRepository.save(reembolsoEntity);
+
+        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() + reembolsoSavedEntity.getValor());
+        usuarioRepository.save(usuarioLogadoEntity);
 
         // enviar para todos os GESTORES
         List<UsuarioComposeDTO> gestores = usuarioService.listarTodosGestores();
@@ -53,47 +58,61 @@ public class ReembolsoService {
     }
 
     public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
+        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
+        ReembolsoEntity reembolsoAtualizado;
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
 
+        reembolsoEntity.setDataUltimaAlteracao(LocalDateTime.now());
+
         if (aprovado) {
+            if (StatusReembolso.REPROVADO_GESTOR.equals(StatusReembolso.values()[reembolsoEntity.getStatus()])
+                    || StatusReembolso.REPROVADO_FINANCEIRO.equals(StatusReembolso.values()[reembolsoEntity.getStatus()])){
+                usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() + reembolsoEntity.getValor());
+            }
             reembolsoEntity.setStatus(StatusReembolso.APROVADO_GESTOR.ordinal());
 
-            ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
 
             log.info("Solicitacao de reembolso APROVADO pelo GESTOR.");
-
-            return entityToDTO(reembolsoAtualizado);
         } else {
             reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.ordinal());
 
-            ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+
+            usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() - reembolsoAtualizado.getValor());
 
             log.info("Solicitacao de reembolso REPROVADO pelo GESTOR.");
-
-            return entityToDTO(reembolsoAtualizado);
         }
+
+        usuarioRepository.save(usuarioLogadoEntity);
+
+        return entityToDTO(reembolsoAtualizado);
     }
 
     public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
+        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
+        ReembolsoEntity reembolsoAtualizado;
 
         if (pagar) {
             reembolsoEntity.setStatus(StatusReembolso.FECHADO_PAGO.ordinal());
 
-            ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
 
             log.info("Solicitacao de reembolso FECHADO E PAGO pelo FINANCEIRO.");
-
-            return entityToDTO(reembolsoAtualizado);
         } else {
             reembolsoEntity.setStatus(StatusReembolso.REPROVADO_FINANCEIRO.ordinal());
 
-            ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
 
             log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
-
-            return entityToDTO(reembolsoAtualizado);
         }
+
+        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() - reembolsoAtualizado.getValor());
+        usuarioRepository.save(usuarioLogadoEntity);
+
+        reembolsoAtualizado.setDataUltimaAlteracao(LocalDateTime.now());
+        return entityToDTO(reembolsoAtualizado);
     }
 
     public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
@@ -103,7 +122,7 @@ public class ReembolsoService {
         if (statusReembolso.equals(StatusReembolso.TODOS)) {
             reembolsosEntities = reembolsoRepository.findAllOrderByStatusAndDate(pageable);
         } else {
-            reembolsosEntities = reembolsoRepository.findAllByStatusOrderByDataAsc(statusReembolso.ordinal(), pageable);
+            reembolsosEntities = reembolsoRepository.findAllByStatusOrderByDataEntradaAsc(statusReembolso.ordinal(), pageable);
         }
 
         List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream()
@@ -127,7 +146,7 @@ public class ReembolsoService {
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
         reembolsoEntity.setIdReembolso(idReembolso);
         reembolsoEntity.setStatus(reembolsoEntityRecuperado.getStatus());
-        reembolsoEntity.setData(reembolsoEntityRecuperado.getData());
+        reembolsoEntity.setDataEntrada(reembolsoEntityRecuperado.getDataEntrada());
         reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
         ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
@@ -143,9 +162,9 @@ public class ReembolsoService {
         UsuarioEntity loggedUser = usuarioService.getLoggedUser();
 
         if (statusReembolso.equals(StatusReembolso.TODOS)) {
-            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataAsc(loggedUser, pageable);
+            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataEntradaAsc(loggedUser, pageable);
         } else {
-            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityAndStatusOrderByDataAsc(loggedUser, statusReembolso.ordinal(), pageable);
+            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityAndStatusOrderByDataEntradaAsc(loggedUser, statusReembolso.ordinal(), pageable);
         }
 
         List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream()
