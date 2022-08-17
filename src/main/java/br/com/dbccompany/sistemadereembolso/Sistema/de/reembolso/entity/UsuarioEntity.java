@@ -42,7 +42,7 @@ public class UsuarioEntity implements UserDetails {
     private FotosEntity fotosEntity;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "usuario_roles",
             joinColumns = @JoinColumn(name = "id_usuario"),
