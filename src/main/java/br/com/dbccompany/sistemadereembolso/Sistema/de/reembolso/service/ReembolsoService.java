@@ -17,7 +17,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -97,10 +96,16 @@ public class ReembolsoService {
         }
     }
 
-    public PageDTO<ReembolsoDTO> listAll(Integer pagina, Integer quantidadeDeRegistros) {
+    public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        Page<ReembolsoEntity> reembolsosEntities;
 
-        Page<ReembolsoEntity> reembolsosEntities = reembolsoRepository.findAllOrderByStatusAndDate(pageable);
+        if (statusReembolso.equals(StatusReembolso.TODOS)) {
+            reembolsosEntities = reembolsoRepository.findAllOrderByStatusAndDate(pageable);
+        } else {
+            reembolsosEntities = reembolsoRepository.findAllByStatusOrderByDataAsc(statusReembolso.ordinal(), pageable);
+        }
+
         List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream()
                 .map(reembolsoEntity -> {
                     ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
@@ -112,26 +117,10 @@ public class ReembolsoService {
         return pageDTO;
     }
 
-    public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
-        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
-        List<ReembolsoDTO> reembolsoDTOList = new ArrayList<>();
-
-        for (StatusReembolso status : statusReembolso) {
-            List<ReembolsoEntity> reembolsoEntities = reembolsoRepository.findAllByStatusOrderByDataAsc(status.ordinal());
-            List<ReembolsoDTO> reembolsoDTOS = reembolsoEntities.stream()
-                    .map(reembolsoEntity -> {
-                        ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
-                        return reembolsoDTO;
-                    }).toList();
-            reembolsoDTOList.addAll(reembolsoDTOS);
-        }
-
-        return getPageFromList(pagina, quantidadeDeRegistros, pageable, reembolsoDTOList);
-    }
-
     //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
 
-    public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
+    public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws
+            RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntityRecuperado = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
 
@@ -148,11 +137,17 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public PageDTO<ReembolsoDTO> listAllByLoggedUser(Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+    public PageDTO<ReembolsoDTO> listAllByLoggedUserAndStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        Page<ReembolsoEntity> reembolsosEntities;
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
         UsuarioEntity loggedUser = usuarioService.getLoggedUser();
 
-        Page<ReembolsoEntity> reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityOrderByDataAsc(loggedUser, pageable);
+        if (statusReembolso.equals(StatusReembolso.TODOS)) {
+            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataAsc(loggedUser, pageable);
+        } else {
+            reembolsosEntities = reembolsoRepository.findAllByUsuarioEntityAndStatusOrderByDataAsc(loggedUser, statusReembolso.ordinal(), pageable);
+        }
+
         List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream()
                 .map(reembolsoEntity -> {
                     ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
@@ -164,45 +159,27 @@ public class ReembolsoService {
         return pageDTO;
     }
 
-
-    public PageDTO<ReembolsoDTO> listAllByLoggedUserAndStatus(List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
-        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
-        UsuarioEntity loggedUser = usuarioService.getLoggedUser();
-        List<ReembolsoDTO> reembolsoDTOList = new ArrayList<>();
-
-
-        for (StatusReembolso status : statusReembolso) {
-            List<ReembolsoEntity> reembolsoEntities = reembolsoRepository.findAllByUsuarioEntityAndStatusOrderByDataAsc(loggedUser, status.ordinal());
-            List<ReembolsoDTO> reembolsoDTOS = reembolsoEntities.stream()
-                    .map(reembolsoEntity -> {
-                        ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
-                        return reembolsoDTO;
-                    }).toList();
-            reembolsoDTOList.addAll(reembolsoDTOS);
-        }
-
-        return getPageFromList(pagina, quantidadeDeRegistros, pageable, reembolsoDTOList);
-    }
-
     public ReembolsoDTO listById(Integer idReembolso) throws RegraDeNegocioException {
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
 
         return entityToDTO(reembolsoEntity);
     }
 
-    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer
+            quantidadeDeRegistros) throws RegraDeNegocioException {
         ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.getLoggedUser());
 
         reembolsoRepository.delete(reembolsoEntity);
 
         log.info("Reembolso deletado com sucesso.");
 
-        return listAllByLoggedUser(pagina, quantidadeDeRegistros);
+        return listAllByLoggedUserAndStatus(StatusReembolso.TODOS, pagina, quantidadeDeRegistros);
     }
 
 
     //  ===================== METODOS AUXILIARES ====================
-    private PageDTO<ReembolsoDTO> getPageFromList(Integer pagina, Integer quantidadeDeRegistros, Pageable pageable, List<ReembolsoDTO> reembolsoDTOList) {
+    private PageDTO<ReembolsoDTO> getPageFromList(Integer pagina, Integer quantidadeDeRegistros, Pageable
+            pageable, List<ReembolsoDTO> reembolsoDTOList) {
         int start = (int) pageable.getOffset();
         int end = Math.min((start + pageable.getPageSize()), reembolsoDTOList.size());
         Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOList.subList(start, end), pageable, reembolsoDTOList.size());
@@ -210,7 +187,8 @@ public class ReembolsoService {
         return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
     }
 
-    public ReembolsoEntity findByIdAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity) throws RegraDeNegocioException {
+    public ReembolsoEntity findByIdAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity) throws
+            RegraDeNegocioException {
         return reembolsoRepository.findByIdReembolsoAndUsuarioEntity(idReembolso, usuarioEntity).orElseThrow(() -> new RegraDeNegocioException("Reembolso não encontrado"));
     }
 

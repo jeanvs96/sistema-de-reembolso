@@ -26,13 +26,8 @@ public class ReembolsoController {
         return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAll(Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.listAll(pagina, quantidadeDeRegistros), HttpStatus.OK);
-    }
-
     @GetMapping("/list/status")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
         return new ResponseEntity<>(reembolsoService.listAllReembolsosByStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
@@ -42,7 +37,7 @@ public class ReembolsoController {
     }
 
     @GetMapping("/logged/list/status")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByLoggedUserAndStatus(@RequestParam List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByLoggedUserAndStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.listAllByLoggedUserAndStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 

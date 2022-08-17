@@ -14,10 +14,10 @@ import java.util.Optional;
 @Repository
 public interface ReembolsoRepository extends JpaRepository<ReembolsoEntity, Integer> {
 
-    Page<ReembolsoEntity> findAllByUsuarioEntityOrderByDataAsc(UsuarioEntity usuarioEntity, Pageable pageable);
-    List<ReembolsoEntity> findAllByUsuarioEntityAndStatusOrderByDataAsc(UsuarioEntity usuarioEntity, Integer status);
+    Page<ReembolsoEntity> findAllByUsuarioEntityOrderByStatusAscDataAsc(UsuarioEntity usuarioEntity, Pageable pageable);
+    Page<ReembolsoEntity> findAllByUsuarioEntityAndStatusOrderByDataAsc(UsuarioEntity usuarioEntity, Integer status, Pageable pageable);
 
-    List<ReembolsoEntity> findAllByStatusOrderByDataAsc(Integer status);
+    Page<ReembolsoEntity> findAllByStatusOrderByDataAsc(Integer status, Pageable pageable);
 
     Optional<ReembolsoEntity> findByIdReembolsoAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity);
 
