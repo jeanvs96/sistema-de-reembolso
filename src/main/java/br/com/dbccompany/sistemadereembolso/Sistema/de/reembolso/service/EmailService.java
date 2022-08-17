@@ -42,18 +42,18 @@ public class EmailService {
             if (reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
                 mimeMessageHelper.setSubject("Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
             }
-            else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
-                mimeMessageHelper.setSubject("Olá Financeiro! Você tem uma nova solicitação aguardando sua avaliação.");
-            }
-            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
-                mimeMessageHelper.setSubject("Solicitação reprovada.");
-            }
-            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_FINANCEIRO.ordinal())) {
-                mimeMessageHelper.setSubject("Solicitação reprovada.");
-            }
-            else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
-                mimeMessageHelper.setSubject("Fechado e encaminhado para pagamento.");
-            }
+//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
+//                mimeMessageHelper.setSubject("Olá Financeiro! Você tem uma nova solicitação aguardando sua avaliação.");
+//            }
+//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
+//                mimeMessageHelper.setSubject("Solicitação reprovada.");
+//            }
+//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_FINANCEIRO.ordinal())) {
+//                mimeMessageHelper.setSubject("Solicitação reprovada.");
+//            }
+//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
+//                mimeMessageHelper.setSubject("Fechado e encaminhado para pagamento.");
+//            }
             else {
                 throw new RegraDeNegocioException("Falha no envio de e-mail");
             }
@@ -76,33 +76,36 @@ public class EmailService {
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
             template = fmConfiguration.getTemplate("email-template-copy2.html");
 
-        } else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
-            dados.put("nome", "Olá Financeiro! \nVocê tem uma nova solicitação aguardando sua avaliação.");
-            dados.put("mensagem", "Seus dados foram atualizados com sucesso e já podem ser encontrados por empresas e talentos.");
-            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template-copy2.html");
-
+        }else{
+            template=null;
         }
-        else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
-            dados.put("nome", "Olá, a sua solicitação foi reprovada!");
-            dados.put("mensagem", "Notamos algumas inconsistencias na sua solicitação, contate o seu gestor para mais detalhes.");
-            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template-copy2.html");
-
-        }
-        else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
-            dados.put("nome", "Olá, sua solicitação foi aprovada pelo financeiro!");
-            dados.put("mensagem", "Sua solicitação foi aprovada e será encaminhada para pagamento.");
-            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template-copy2.html");
-
-        }
-        else { // REPROVADO_FINANCEIRO
-            dados.put("nome", "Olá, sua solicitação foi reprovada.");
-            dados.put("mensagem", "Sua solicitação foi reprovada pelo financeiro.");
-            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template-copy2.html");
-        }
+//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
+//            dados.put("nome", "Olá Financeiro! \nVocê tem uma nova solicitação aguardando sua avaliação.");
+//            dados.put("mensagem", "Seus dados foram atualizados com sucesso e já podem ser encontrados por empresas e talentos.");
+//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
+//            template = fmConfiguration.getTemplate("email-template-copy2.html");
+//
+//        }
+//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
+//            dados.put("nome", "Olá, a sua solicitação foi reprovada!");
+//            dados.put("mensagem", "Notamos algumas inconsistencias na sua solicitação, contate o seu gestor para mais detalhes.");
+//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
+//            template = fmConfiguration.getTemplate("email-template-copy2.html");
+//
+//        }
+//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
+//            dados.put("nome", "Olá, sua solicitação foi aprovada pelo financeiro!");
+//            dados.put("mensagem", "Sua solicitação foi aprovada e será encaminhada para pagamento.");
+//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
+//            template = fmConfiguration.getTemplate("email-template-copy2.html");
+//
+//        }
+//        else { // REPROVADO_FINANCEIRO
+//            dados.put("nome", "Olá, sua solicitação foi reprovada.");
+//            dados.put("mensagem", "Sua solicitação foi reprovada pelo financeiro.");
+//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
+//            template = fmConfiguration.getTemplate("email-template-copy2.html");
+//        }
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
         return html;
     }

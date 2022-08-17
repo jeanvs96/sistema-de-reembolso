@@ -43,11 +43,13 @@ public class ReembolsoService {
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
 
         ReembolsoEntity reembolsoSavedEntity = reembolsoRepository.save(reembolsoEntity);
+
         // enviar para todos os GESTORES
         List<UsuarioComposeDTO> gestores = usuarioService.listarTodosGestores();
+
         for (UsuarioComposeDTO gestor: gestores) {
             log.info(gestor.getEmail());
-            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
+            emailService.sendEmail(reembolsoSavedEntity, "ferreiradrrafael@gmail.com");
         }
 
         ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoSavedEntity);
