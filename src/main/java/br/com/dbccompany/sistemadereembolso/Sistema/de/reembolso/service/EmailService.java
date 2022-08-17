@@ -92,14 +92,14 @@ public class EmailService {
         }
         else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
             dados.put("nome", "Olá, sua solicitação foi aprovada pelo financeiro!");
-            dados.put("mensagem", "Notamos que voce está afastado por mais de 8 dias, sua presença é importante para a DevLand.");
+            dados.put("mensagem", "Sua solicitação foi aprovada e será encaminhada para pagamento.");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
             template = fmConfiguration.getTemplate("email-template-copy2.html");
 
         }
         else { // REPROVADO_FINANCEIRO
             dados.put("nome", "Olá, sua solicitação foi reprovada.");
-            dados.put("mensagem", "Seu cadastro foi removido da nossa rede, mas você pode voltar quando quiser!");
+            dados.put("mensagem", "Sua solicitação foi reprovada pelo financeiro.");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
             template = fmConfiguration.getTemplate("email-template-copy2.html");
         }
