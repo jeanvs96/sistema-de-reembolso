@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
 import javax.mail.MessagingException;
@@ -20,7 +21,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-
+@Service
 @RequiredArgsConstructor
 @Slf4j
 public class EmailService {
@@ -30,13 +31,13 @@ public class EmailService {
     @Value("${spring.mail.username}")
     private String from;
 
-    public void sendEmailUsuario(ReembolsoEntity reembolsoEntity) {
+    public void sendEmail(ReembolsoEntity reembolsoEntity, String sendTo) {
         try {
             MimeMessage mimeMessage = emailSender.createMimeMessage();
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
 
             mimeMessageHelper.setFrom(from);
-            mimeMessageHelper.setTo(reembolsoEntity.getUsuarioEntity().getEmail());
+            mimeMessageHelper.setTo(sendTo);
 
             if (reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
                 mimeMessageHelper.setSubject("Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
@@ -73,34 +74,34 @@ public class EmailService {
             dados.put("mensagem", "Título: " + reembolsoEntity.getTitulo() +
                     "\nValor = " + reembolsoEntity.getValor());
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template.html");
+            template = fmConfiguration.getTemplate("email-template-copy2.html");
 
         } else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
             dados.put("nome", "Olá Financeiro! \nVocê tem uma nova solicitação aguardando sua avaliação.");
             dados.put("mensagem", "Seus dados foram atualizados com sucesso e já podem ser encontrados por empresas e talentos.");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template.html");
+            template = fmConfiguration.getTemplate("email-template-copy2.html");
 
         }
         else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
             dados.put("nome", "Olá, a sua solicitação foi reprovada!");
             dados.put("mensagem", "Notamos algumas inconsistencias na sua solicitação, contate o seu gestor para mais detalhes.");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template.html");
+            template = fmConfiguration.getTemplate("email-template-copy2.html");
 
         }
         else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
             dados.put("nome", "Olá, sua solicitação foi aprovada pelo financeiro!");
             dados.put("mensagem", "Notamos que voce está afastado por mais de 8 dias, sua presença é importante para a DevLand.");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template.html");
+            template = fmConfiguration.getTemplate("email-template-copy2.html");
 
         }
         else { // REPROVADO_FINANCEIRO
             dados.put("nome", "Olá, sua solicitação foi reprovada.");
             dados.put("mensagem", "Seu cadastro foi removido da nossa rede, mas você pode voltar quando quiser!");
             dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template.html");
+            template = fmConfiguration.getTemplate("email-template-copy2.html");
         }
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
         return html;

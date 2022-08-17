@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -95,15 +96,6 @@ public class UsuarioService {
 
         usuarioEntityRecuperado.setRolesEntities(setRoles);
 
-//        if (TipoRoles.ADMINISTRADOR.getTipo().equals(rolesEntity.getNome())) {
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.GESTOR.getTipo()));
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.COLABORADOR.getTipo()));
-//            usuarioEntityRecuperado.getRolesEntities().add(
-//                    rolesService.findByRole(TipoRoles.FINANCEIRO.getTipo()));
-//        }
-
         UsuarioEntity usuarioEntityAtualizado = usuarioRepository.save(usuarioEntityRecuperado);
         return entityToDto(usuarioEntityAtualizado);
     }
@@ -132,6 +124,13 @@ public class UsuarioService {
                 })
                 .toList();
         return all;
+    }
+    public List<UsuarioComposeDTO> listarTodosGestores (){
+        List<UsuarioComposeDTO> listByCargo = usuarioRepository.findAll().stream()
+                .filter(user-> user.getRolesEntities().stream().anyMatch(role-> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
+                .map(this::entityToComposeDto)
+                .toList();
+        return listByCargo;
     }
 
     public String ativarDesativarUsuario(Integer idUsuario, AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {
@@ -163,7 +162,7 @@ public class UsuarioService {
     public void verificarHostEmail(String email) throws RegraDeNegocioException {
         String[] emailSplit = email.split("@");
         if (!EMAIL_HOST.equals(emailSplit[1])){
-            throw new RegraDeNegocioException("Insira uma email DBC válido");
+            throw new RegraDeNegocioException("Insira um email DBC válido");
         }
     }
 

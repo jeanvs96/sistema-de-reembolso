@@ -3,10 +3,13 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioComposeDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.AnexosRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +30,7 @@ import java.util.List;
 public class ReembolsoService {
     private final ReembolsoRepository reembolsoRepository;
     private final UsuarioService usuarioService;
+    private final EmailService emailService;
     private final ObjectMapper objectMapper;
 
     public ReembolsoDTO create(ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
@@ -37,7 +41,15 @@ public class ReembolsoService {
         reembolsoEntity.setUsuarioEntity(usuarioLogadoEntity);
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
 
-        ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoRepository.save(reembolsoEntity));
+        ReembolsoEntity reembolsoSavedEntity = reembolsoRepository.save(reembolsoEntity);
+        // enviar para todos os GESTORES
+        List<UsuarioComposeDTO> gestores = usuarioService.listarTodosGestores();
+        for (UsuarioComposeDTO gestor: gestores) {
+            log.info(gestor.getEmail());
+            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
+        }
+
+        ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoSavedEntity);
         reembolsoDTO.setUsuario(usuarioService.entityToComposeDto(usuarioLogadoEntity));
 
         return reembolsoDTO;
