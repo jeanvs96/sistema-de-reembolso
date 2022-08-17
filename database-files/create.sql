@@ -77,7 +77,7 @@ create table reembolso(
                           valor double precision not null,
                           status integer not null,
                           data_entrada timestamp not null,
-                          id_anexos bigint not null,
+                          id_anexos bigint,
                           id_usuario bigint not null,
                           primary key (id_reembolso),
                           constraint fk_reembolso_id_usuario
@@ -92,4 +92,7 @@ create sequence seq_reembolso
     increment 1
 start 1;
 
-
+insert into sistema_de_reembolso.roles(id_roles, nome) values(nextval('seq_roles'), 'ROLE_ADMIN');
+insert into sistema_de_reembolso.roles(id_roles, nome) values(nextval('seq_roles'), 'ROLE_FINANCEIRO');
+insert into sistema_de_reembolso.roles(id_roles, nome) values(nextval('seq_roles'), 'ROLE_GESTOR');
+insert into sistema_de_reembolso.roles(id_roles, nome) values(nextval('seq_roles'), 'ROLE_COLABORADOR');
