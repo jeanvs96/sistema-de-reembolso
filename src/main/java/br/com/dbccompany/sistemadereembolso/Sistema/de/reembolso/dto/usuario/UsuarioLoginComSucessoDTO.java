@@ -4,6 +4,7 @@ import lombok.Data;
 
 @Data
 public class UsuarioLoginComSucessoDTO {
+    Integer idUsuario;
     String token;
     String role;
 }

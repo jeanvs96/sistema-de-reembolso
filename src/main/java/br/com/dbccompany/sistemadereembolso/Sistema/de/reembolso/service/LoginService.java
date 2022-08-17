@@ -34,6 +34,7 @@ public class LoginService {
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
         usuarioLoginComSucessoDTO.setRole(usuarioEntity.getRolesEntities().stream().findFirst().get().getNome());
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioEntity, expiration));
+        usuarioLoginComSucessoDTO.setIdUsuario(usuarioEntity.getIdUsuario());
 
         return usuarioLoginComSucessoDTO;
     }
