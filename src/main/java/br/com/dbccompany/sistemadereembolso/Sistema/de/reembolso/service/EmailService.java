@@ -21,6 +21,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -57,55 +58,22 @@ public class EmailService {
             else {
                 throw new RegraDeNegocioException("Falha no envio de e-mail");
             }
-            mimeMessageHelper.setText(getContentFromTemplatePessoa(reembolsoEntity), true);
+            mimeMessageHelper.setText(getContentFromTemplate(reembolsoEntity), true);
             emailSender.send(mimeMessageHelper.getMimeMessage());
         } catch (RegraDeNegocioException | MessagingException | IOException | TemplateException e) {
             log.info("Erro no envio de email");
         }
     }
 
-    public String getContentFromTemplatePessoa(ReembolsoEntity reembolsoEntity) throws IOException, TemplateException {
+    public String getContentFromTemplate(ReembolsoEntity reembolsoEntity) throws IOException, TemplateException {
         Map<String, Object> dados = new HashMap<>();
 
         Template template;
-
-        if (reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
-            dados.put("intro", "Olá Gestor! \nVocê tem uma nova solicitação aguardando sua avaliação.");
-            dados.put("mensagem", "Título: " + reembolsoEntity.getTitulo() +
-                    "\nValor = " + reembolsoEntity.getValor());
-            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-            template = fmConfiguration.getTemplate("email-template-copy2.html");
-
-        }else{
-            template=null;
-        }
-//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
-//            dados.put("nome", "Olá Financeiro! \nVocê tem uma nova solicitação aguardando sua avaliação.");
-//            dados.put("mensagem", "Seus dados foram atualizados com sucesso e já podem ser encontrados por empresas e talentos.");
-//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-//            template = fmConfiguration.getTemplate("email-template-copy2.html");
-//
-//        }
-//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
-//            dados.put("nome", "Olá, a sua solicitação foi reprovada!");
-//            dados.put("mensagem", "Notamos algumas inconsistencias na sua solicitação, contate o seu gestor para mais detalhes.");
-//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-//            template = fmConfiguration.getTemplate("email-template-copy2.html");
-//
-//        }
-//        else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
-//            dados.put("nome", "Olá, sua solicitação foi aprovada pelo financeiro!");
-//            dados.put("mensagem", "Sua solicitação foi aprovada e será encaminhada para pagamento.");
-//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-//            template = fmConfiguration.getTemplate("email-template-copy2.html");
-//
-//        }
-//        else { // REPROVADO_FINANCEIRO
-//            dados.put("nome", "Olá, sua solicitação foi reprovada.");
-//            dados.put("mensagem", "Sua solicitação foi reprovada pelo financeiro.");
-//            dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
-//            template = fmConfiguration.getTemplate("email-template-copy2.html");
-//        }
+        dados.put("intro", "Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
+        dados.put("mensagem", "Título: " + reembolsoEntity.getTitulo() +
+                "\nValor = " + reembolsoEntity.getValor());
+        dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
+        template = fmConfiguration.getTemplate("email-template.html");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
         return html;
     }
