@@ -31,7 +31,7 @@ public class UsuarioEntity implements UserDetails {
     private String senha;
 
     @Column(name = "valor_total")
-    private Double valorFinal;
+    private Double valorTotal;
 
     @Column(name = "status")
     private Boolean status;

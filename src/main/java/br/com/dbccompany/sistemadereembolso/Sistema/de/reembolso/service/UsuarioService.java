@@ -45,6 +45,7 @@ public class UsuarioService {
 
         usuarioEntity.setStatus(true);
         usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(TipoRoles.COLABORADOR.getTipo())));
+        usuarioEntity.setValorTotal(0.0);
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
