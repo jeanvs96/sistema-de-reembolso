@@ -53,6 +53,7 @@ public class UsuarioService {
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioSalvo, expiration));
         usuarioLoginComSucessoDTO.setRole(usuarioSalvo.getRolesEntities().stream().findFirst().get().getNome());
+        usuarioLoginComSucessoDTO.setIdUsuario(usuarioSalvo.getIdUsuario());
 
         return usuarioLoginComSucessoDTO;
     }

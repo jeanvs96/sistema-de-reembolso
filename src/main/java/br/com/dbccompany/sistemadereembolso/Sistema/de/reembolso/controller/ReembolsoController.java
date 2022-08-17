@@ -25,22 +25,34 @@ public class ReembolsoController {
     public ResponseEntity<ReembolsoDTO> create(@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
     }
+
+    @GetMapping("/list")
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listAll(Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        return new ResponseEntity<>(reembolsoService.listAll(pagina, quantidadeDeRegistros), HttpStatus.OK);
+    }
+
     @GetMapping("/list/status")
     public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
-        return new ResponseEntity<>(reembolsoService.findAllReembolsosByStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
+        return new ResponseEntity<>(reembolsoService.listAllReembolsosByStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
+    }
+
+    @GetMapping("/{idReembolso}")
+    public ResponseEntity<ReembolsoDTO> listById(@PathVariable("idReembolso") Integer idReembolso) throws RegraDeNegocioException {
+        return new ResponseEntity<>(reembolsoService.listById(idReembolso), HttpStatus.OK);
     }
 
     @GetMapping("/logged/list/status")
     public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByLoggedUserAndStatus(@RequestParam List<StatusReembolso> statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.listAllByLoggedUser(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
+        return new ResponseEntity<>(reembolsoService.listAllByLoggedUserAndStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
     @PutMapping("/logged/update/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateByLoggedUser(@PathVariable("idReembolso") Integer idReembolso ,@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.updateByLoggedUser(idReembolso, reembolsoCreateDTO), HttpStatus.ACCEPTED);
     }
+
     @DeleteMapping("/logged/delete/{idReembolso}")
-    public void deleteByLoggedUser(@PathVariable("idReembolso") Integer idReembolso) throws RegraDeNegocioException {
-        reembolsoService.deleteByLoggedUser(idReembolso);
+    public ResponseEntity<PageDTO<ReembolsoDTO>> deleteByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        return new ResponseEntity<>(reembolsoService.deleteByLoggedUser(idReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 }

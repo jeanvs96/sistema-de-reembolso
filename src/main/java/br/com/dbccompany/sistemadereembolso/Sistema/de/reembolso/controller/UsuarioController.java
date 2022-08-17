@@ -53,8 +53,8 @@ public class UsuarioController implements UsuarioDocumentation {
 //        return new ResponseEntity<>(usuarioService.update(usuarioUpdateDTO), HttpStatus.OK);
 //    }
 
-//    @DeleteMapping("/delete/{idUsuario}")
-//    public void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
-//        usuarioService.deleteUsuario(idUsuario);
-//    }
+    @DeleteMapping("/delete/{idUsuario}")
+    public void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
+        usuarioService.deleteUsuario(idUsuario);
+    }
 }
