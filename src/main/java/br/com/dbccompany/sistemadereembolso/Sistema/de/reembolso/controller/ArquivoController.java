@@ -1,7 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FormDataEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ArquivosService;
@@ -21,8 +20,8 @@ public class ArquivoController {
     private final ArquivosService arquivosService;
 
     @PostMapping(value = "/foto", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<FotosEntity> uploadFoto(@ModelAttribute FormDataEntity model) throws IOException, RegraDeNegocioException {
-        return new ResponseEntity<>(arquivosService.saveFoto(model.getImage()), HttpStatus.OK);
+    public ResponseEntity<FotosEntity> uploadFoto(@RequestPart("file") MultipartFile file) throws IOException, RegraDeNegocioException {
+        return new ResponseEntity<>(arquivosService.saveFoto(file), HttpStatus.OK);
     }
 
     @PostMapping(value = "/anexo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
