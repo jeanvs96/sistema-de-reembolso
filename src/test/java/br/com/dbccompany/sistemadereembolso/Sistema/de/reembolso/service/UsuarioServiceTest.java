@@ -7,9 +7,6 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.RolesService;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioRolesService;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

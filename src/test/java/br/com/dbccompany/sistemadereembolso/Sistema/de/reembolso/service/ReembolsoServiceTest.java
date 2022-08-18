@@ -91,6 +91,24 @@ public class ReembolsoServiceTest {
         assertEquals(StatusReembolso.APROVADO_GESTOR.getTipo(), reembolsoAprovadoDTO.getStatusDoReembolso());
         assertEquals(500L, reembolsoAprovadoDTO.getValor().longValue());
     }
+    @Test
+    public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws RegraDeNegocioException {
+        Integer idReembolso = 1;
+        Boolean aprovado = true;
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.ordinal());
+
+        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
+        when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
+
+        ReembolsoDTO reembolsoAprovadoDTO = reembolsoService.updateGestorAprovar(idReembolso, aprovado);
+
+        assertNotNull(reembolsoAprovadoDTO);
+        assertEquals(StatusReembolso.APROVADO_GESTOR.getTipo(), reembolsoAprovadoDTO.getStatusDoReembolso());
+        assertEquals(500L, reembolsoAprovadoDTO.getValor().longValue());
+    }
 
     @Test
     public void deveTestarUpdateGestorReprovarComSucesso() throws RegraDeNegocioException {
@@ -158,6 +176,18 @@ public class ReembolsoServiceTest {
         when(reembolsoRepository.findAllByStatusOrderByDataEntradaAsc(anyInt(), any(Pageable.class))).thenReturn(page);
 
         PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllReembolsosByStatus(StatusReembolso.ABERTO, 0, 10);
+
+        assertNotNull(reembolsoDTOPageDTO);
+    }
+
+    @Test
+    public void deveTestarListAllReembolsoByStatusTODOSComSucesso() {
+        List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
+        Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
+
+        when(reembolsoRepository.findAllOrderByStatusAndDate(any(Pageable.class))).thenReturn(page);
+
+        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllReembolsosByStatus(StatusReembolso.TODOS, 0, 10);
 
         assertNotNull(reembolsoDTOPageDTO);
     }
