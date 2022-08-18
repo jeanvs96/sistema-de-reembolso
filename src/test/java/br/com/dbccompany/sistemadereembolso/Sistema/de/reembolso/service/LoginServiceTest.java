@@ -18,7 +18,6 @@ public class LoginServiceTest {
     private TokenService tokenService;
     @Mock
     private UsuarioService usuarioService;
-
     @Test
     public void deveTestarLoginComSucesso(){
 

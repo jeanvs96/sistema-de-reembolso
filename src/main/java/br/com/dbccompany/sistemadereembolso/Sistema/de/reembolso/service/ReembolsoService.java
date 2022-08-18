@@ -58,9 +58,9 @@ public class ReembolsoService {
     }
 
     public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
-        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoAtualizado;
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
+        UsuarioEntity usuarioLogadoEntity = reembolsoEntity.getUsuarioEntity();
 
         reembolsoEntity.setDataUltimaAlteracao(LocalDateTime.now());
 
@@ -90,8 +90,8 @@ public class ReembolsoService {
     }
 
     public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
-        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
+        UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
         ReembolsoEntity reembolsoAtualizado;
 
         if (pagar) {
@@ -108,8 +108,8 @@ public class ReembolsoService {
             log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
         }
 
-        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() - reembolsoAtualizado.getValor());
-        usuarioRepository.save(usuarioLogadoEntity);
+        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal() - reembolsoAtualizado.getValor());
+        usuarioRepository.save(usuarioEntity);
 
         reembolsoAtualizado.setDataUltimaAlteracao(LocalDateTime.now());
         return entityToDTO(reembolsoAtualizado);
@@ -197,14 +197,7 @@ public class ReembolsoService {
 
 
     //  ===================== METODOS AUXILIARES ====================
-    private PageDTO<ReembolsoDTO> getPageFromList(Integer pagina, Integer quantidadeDeRegistros, Pageable
-            pageable, List<ReembolsoDTO> reembolsoDTOList) {
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), reembolsoDTOList.size());
-        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOList.subList(start, end), pageable, reembolsoDTOList.size());
 
-        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
-    }
 
     public ReembolsoEntity findByIdAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity) throws
             RegraDeNegocioException {

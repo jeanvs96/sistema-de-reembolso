@@ -15,7 +15,7 @@ public class FotosEntity {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "fotos_seq")
     @SequenceGenerator(name = "fotos_seq", sequenceName = "seq_fotos", allocationSize = 1)
     @Column(name = "id_fotos")
-    private Integer idArquivos;
+    private Integer idFotos;
 
     @Column(name = "nome")
     private String nome;
