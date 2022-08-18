@@ -1,26 +1,28 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.RolesDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.AtivarDesativarUsuario;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -35,6 +37,7 @@ public class UsuarioService {
     private final RolesService rolesService;
     private final UsuarioRolesService usuarioRolesService;
     private final TokenService tokenService;
+    private final ReembolsoRepository reembolsoRepository;
 
 
     public UsuarioLoginComSucessoDTO save(UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException {
@@ -49,7 +52,7 @@ public class UsuarioService {
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
-        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
+        log.info("Usuário " + usuarioSalvo.getNome() + " com id: " + usuarioSalvo.getIdUsuario() + " foi criado com sucesso!");
 
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioSalvo, expiration));
@@ -59,25 +62,22 @@ public class UsuarioService {
         return usuarioLoginComSucessoDTO;
     }
 
-//    public UsuarioDTO update(UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException {
-//        Integer idUsuario = getIdLoggedUser();
-//        UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
-//
-//        if (usuarioUpdateDTO.getEmail() != null) {
-//            verificarHostEmail(usuarioUpdateDTO.getEmail());
-//            verificarSeEmailExiste(usuarioUpdateDTO.getEmail());
-//            usuarioEntityRecuperado.setEmail(usuarioUpdateDTO.getEmail());
-//        }
-//        if (usuarioUpdateDTO.getSenha() != null) {
-//            usuarioEntityRecuperado.setSenha(usuarioUpdateDTO.getSenha());
-//            encodePassword(usuarioEntityRecuperado);
-//        }
-//        if (usuarioUpdateDTO.getNome() != null) {
-//            usuarioEntityRecuperado.setNome(usuarioUpdateDTO.getNome());
-//        }
-//
-//        return entityToDto(usuarioRepository.save(usuarioEntityRecuperado));
-//    }
+    public UsuarioDTO saveByAdmin(UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException {
+        verificarHostEmail(usuarioCreateDTO.getEmail());
+        verificarSeEmailExiste(usuarioCreateDTO.getEmail());
+
+        UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
+
+        usuarioEntity.setStatus(true);
+        usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(role.getTipo())));
+        usuarioEntity.setValorTotal(0.0);
+
+        UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
+
+        log.info("Usuário " + usuarioSalvo.getNome() + " com id: " + usuarioSalvo.getIdUsuario() + " foi criado com sucesso!");
+
+        return entityToDto(usuarioSalvo);
+    }
 
     public void deleteUsuario(Integer idUsuario) throws RegraDeNegocioException {
         UsuarioEntity usuarioDeletar = findById(idUsuario);
@@ -85,7 +85,32 @@ public class UsuarioService {
 
         usuarioRepository.delete(usuarioDeletar);
 
-        log.info("Usuário "+ nome+ " com id: "+idUsuario+" foi deletado com sucesso!");
+        log.info("Usuário " + nome + " com id: " + idUsuario + " foi deletado com sucesso!");
+    }
+
+    public PageDTO<UsuarioRolesDTO> listAll(Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        List<UsuarioRolesDTO> usuarioRolesDTOList = new ArrayList<>();
+
+        Page<UsuarioEntity> usuarioEntityPage = usuarioRepository.findAll(pageable);
+        usuarioEntityPage.getContent().forEach(usuarioEntity ->
+                usuarioRolesDTOList.add(entityToUsuarioRolesDTO(usuarioEntity)));
+
+        return new PageDTO<>(usuarioEntityPage.getTotalElements(), usuarioEntityPage.getTotalPages(), pagina, quantidadeDeRegistros, usuarioRolesDTOList);
+    }
+
+    public List<UsuarioComposeDTO> listGestores() {
+        List<UsuarioComposeDTO> listByCargo = usuarioRepository.findAll().stream()
+                .filter(user -> user.getRolesEntities()
+                        .stream()
+                        .anyMatch(role -> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
+                .map(this::entityToComposeDto)
+                .toList();
+        return listByCargo;
+    }
+
+    public UsuarioDTO listUsuarioLogged() throws RegraDeNegocioException {
+        return entityToDto(getLoggedUser());
     }
 
     public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
@@ -110,61 +135,9 @@ public class UsuarioService {
         return usuarioRepository.findByEmail(email);
     }
 
-    public UsuarioDTO findUsuarioLogged() throws RegraDeNegocioException {
-        return entityToDto(getLoggedUser());
-    }
-
-//    public List<UsuarioRelatorioDTO> listarUsuarios (){
-//        List<UsuarioRelatorioDTO> all = usuarioRepository.findAll().stream()
-//                .map(user-> {
-//                    UsuarioRelatorioDTO usuarioRelatorioDTO = objectMapper.convertValue(user, UsuarioRelatorioDTO.class);
-//                    usuarioRelatorioDTO.setRolesEntities(user.getRolesEntities());
-//                    usuarioRelatorioDTO.setReembolsoEntities(user.getReembolsoEntities());
-//                    return usuarioRelatorioDTO;
-//                })
-//                .toList();
-//        return all;
-//    }
-    public List<UsuarioComposeDTO> listarTodosGestores (){
-        List<UsuarioComposeDTO> listByCargo = usuarioRepository.findAll().stream()
-                .filter(user-> user.getRolesEntities()
-                        .stream()
-                        .anyMatch(role-> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
-                .map(this::entityToComposeDto)
-                .toList();
-        return listByCargo;
-    }
-
-//    public String ativarDesativarUsuario(Integer idUsuario, AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {
-//        UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
-//
-//        if (ativarDesativarUsuario.equals(AtivarDesativarUsuario.ATIVAR)) {
-//            usuarioEntityRecuperado.setStatus(true);
-//            usuarioRepository.save(usuarioEntityRecuperado);
-//            return "Ativado";
-//        } else {
-//            usuarioEntityRecuperado.setStatus(false);
-//            usuarioRepository.save(usuarioEntityRecuperado);
-//            return "Desativado";
-//        }
-//    }
-
-    //  ===================== METODOS AUXILIARES ====================
-
-    public void encodePassword(UsuarioEntity usuarioEntity) {
-        usuarioEntity.setSenha(passwordEncoder.encode(usuarioEntity.getPassword()));
-    }
-
     private void verificarSeEmailExiste(String email) throws RegraDeNegocioException {
         if (findByEmail(email).isPresent()) {
             throw new RegraDeNegocioException("Email já possui cadastro");
-        }
-    }
-
-    public void verificarHostEmail(String email) throws RegraDeNegocioException {
-        String[] emailSplit = email.split("@");
-        if (!EMAIL_HOST.equals(emailSplit[1])){
-            throw new RegraDeNegocioException("Insira um email DBC válido");
         }
     }
 
@@ -173,12 +146,24 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = findById(idLoggedUser);
         return usuarioEntity;
     }
+
     public Integer getIdLoggedUser() {
         Object principal = SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
         return (Integer) principal;
+    }
+
+    public void verificarHostEmail(String email) throws RegraDeNegocioException {
+        String[] emailSplit = email.split("@");
+        if (!EMAIL_HOST.equals(emailSplit[1])) {
+            throw new RegraDeNegocioException("Insira um email DBC válido");
+        }
+    }
+
+    public void encodePassword(UsuarioEntity usuarioEntity) {
+        usuarioEntity.setSenha(passwordEncoder.encode(usuarioEntity.getPassword()));
     }
 
     public UsuarioDTO entityToDto(UsuarioEntity usuarioEntity) {
@@ -198,20 +183,9 @@ public class UsuarioService {
         return objectMapper.convertValue(usuarioEntity, UsuarioComposeDTO.class);
     }
 
-    public UsuarioDTO saveByAdmin(UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException {
-        verificarHostEmail(usuarioCreateDTO.getEmail());
-        verificarSeEmailExiste(usuarioCreateDTO.getEmail());
-
-        UsuarioEntity usuarioEntity = createToEntity(usuarioCreateDTO);
-
-        usuarioEntity.setStatus(true);
-        usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(role.getTipo())));
-        usuarioEntity.setValorTotal(0.0);
-
-        UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
-
-        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
-
-        return entityToDto(usuarioSalvo);
+    public UsuarioRolesDTO entityToUsuarioRolesDTO(UsuarioEntity usuarioEntity) {
+        UsuarioRolesDTO usuarioRolesDTO = objectMapper.convertValue(usuarioEntity, UsuarioRolesDTO.class);
+        usuarioRolesDTO.setRolesDTO(objectMapper.convertValue(usuarioEntity.getRolesEntities().stream().toList().get(0), RolesDTO.class));
+        return usuarioRolesDTO;
     }
 }

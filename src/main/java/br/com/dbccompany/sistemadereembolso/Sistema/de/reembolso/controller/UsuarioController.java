@@ -1,8 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.UsuarioDocumentation;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.LoginService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
@@ -13,7 +13,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/usuario")
@@ -33,28 +32,18 @@ public class UsuarioController implements UsuarioDocumentation {
         return new ResponseEntity<>(usuarioService.save(usuarioCreateDTO), HttpStatus.OK);
     }
 
-    @GetMapping("/logged")
-    public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException {
-        return new ResponseEntity<>(usuarioService.findUsuarioLogged(), HttpStatus.OK);
-    }
-
-//    @GetMapping("/listar")
-//    public List<UsuarioRelatorioDTO> listarRelatorioUsuarios(){
-//        return usuarioService.listarUsuarios();
-//    }
-
-//    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
-//    public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {
-//        return new ResponseEntity<>(usuarioService.ativarDesativarUsuario(idUsuario, ativarDesativarUsuario), HttpStatus.OK);
-//    }
-//
-//    @PutMapping("/update")
-//    public ResponseEntity<UsuarioDTO> updateUsuario(@RequestBody @Valid UsuarioUpdateDTO usuarioUpdateDTO) throws RegraDeNegocioException {
-//        return new ResponseEntity<>(usuarioService.update(usuarioUpdateDTO), HttpStatus.OK);
-//    }
-
     @DeleteMapping("/delete/{idUsuario}")
     public void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
         usuarioService.deleteUsuario(idUsuario);
+    }
+
+    @GetMapping("/logged")
+    public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException {
+        return new ResponseEntity<>(usuarioService.listUsuarioLogged(), HttpStatus.OK);
+    }
+
+    @GetMapping("/listar")
+    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros){
+        return usuarioService.listAll(pagina, quantidadeDeRegistros);
     }
 }
