@@ -20,12 +20,12 @@ public class ArquivoController {
     private final ArquivosService arquivosService;
 
     @PostMapping(value = "/foto", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<FotosEntity> uploadFoto(@RequestPart("file") MultipartFile file) throws IOException, RegraDeNegocioException {
+    public ResponseEntity<String> uploadFoto(@RequestPart("file") MultipartFile file) throws IOException, RegraDeNegocioException {
         return new ResponseEntity<>(arquivosService.saveFoto(file), HttpStatus.OK);
     }
 
     @PostMapping(value = "/anexo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<AnexosEntity> uploadAnexo(@RequestPart("file") MultipartFile file, Integer idReembolso) throws IOException, RegraDeNegocioException {
+    public ResponseEntity<String> uploadAnexo(@RequestPart("file") MultipartFile file, Integer idReembolso) throws IOException, RegraDeNegocioException {
         return new ResponseEntity<>(arquivosService.saveAnexo(file, idReembolso), HttpStatus.OK);
     }
 }
