@@ -38,10 +38,10 @@ public class UsuarioController implements UsuarioDocumentation {
         return new ResponseEntity<>(usuarioService.findUsuarioLogged(), HttpStatus.OK);
     }
 
-    @GetMapping("/listar")
-    public List<UsuarioRelatorioDTO> listarRelatorioUsuarios(){
-        return usuarioService.listarUsuarios();
-    }
+//    @GetMapping("/listar")
+//    public List<UsuarioRelatorioDTO> listarRelatorioUsuarios(){
+//        return usuarioService.listarUsuarios();
+//    }
 
 //    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
 //    public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {
