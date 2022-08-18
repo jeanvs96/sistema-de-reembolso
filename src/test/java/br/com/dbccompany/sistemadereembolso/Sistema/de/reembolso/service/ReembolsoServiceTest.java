@@ -97,9 +97,9 @@ public class ReembolsoServiceTest {
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setUsuarioEntity(usuarioEntity);
         reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.ordinal());
 
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
         when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
 
@@ -116,11 +116,11 @@ public class ReembolsoServiceTest {
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
         when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
 
         ReembolsoDTO reembolsoReprovadoDTO = reembolsoService.updateGestorAprovar(idReembolso, aprovado);
 
@@ -135,11 +135,11 @@ public class ReembolsoServiceTest {
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
         when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
 
         ReembolsoDTO reembolsoAprovadoDTO = reembolsoService.updateFinanceiroPagar(idReembolso, aprovado);
 
@@ -154,11 +154,11 @@ public class ReembolsoServiceTest {
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
         when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
 
         ReembolsoDTO reembolsoReprovadoDTO = reembolsoService.updateFinanceiroPagar(idReembolso, aprovado);
 
