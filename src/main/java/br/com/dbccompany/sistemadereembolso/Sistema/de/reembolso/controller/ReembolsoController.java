@@ -41,6 +41,11 @@ public class ReembolsoController {
         return new ResponseEntity<>(reembolsoService.listAllByLoggedUserAndStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
+    @GetMapping("/list/nome/status")
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
+        return new ResponseEntity<>(reembolsoService.listAllByNome(nome, statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
+    }
+
     @PutMapping("/logged/update/{idReembolso}")
     public ResponseEntity<ReembolsoDTO> updateByLoggedUser(@PathVariable("idReembolso") Integer idReembolso ,@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.updateByLoggedUser(idReembolso, reembolsoCreateDTO), HttpStatus.ACCEPTED);

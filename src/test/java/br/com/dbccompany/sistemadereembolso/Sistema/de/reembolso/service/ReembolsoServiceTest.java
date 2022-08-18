@@ -68,12 +68,29 @@
 //        when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
 //        when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoSavedEntity);
 //        doNothing().when(emailService).sendEmail(any(ReembolsoEntity.class), anyString());
-//        when(usuarioService.listarTodosGestores()).thenReturn(gestores);
+//        when(usuarioService.listGestores()).thenReturn(gestores);
 //        ReembolsoDTO reembolsoSavedDTO = reembolsoService.create(reembolsoCreateDTO);
 //
 //        assertNotNull(reembolsoSavedDTO);
 //        assertEquals("Aluguel carro", reembolsoSavedDTO.getTitulo());
 //    }
+//
+//
+//@Test
+//public void deveTestarListAllComSucesso(){
+//        Integer pagina = 0;
+//        Integer quantidadeDeRegistros = 1;
+//        UsuarioEntity usuarioEntity = getUsuarioEntity();
+//        RolesEntity rolesEntity = getRolesEntity();
+//        usuarioEntity.setRolesEntities(Set.of(rolesEntity));
+//
+//        when(usuarioRepository.findAll()).thenReturn(List.of(usuarioEntity));
+//
+//        PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAll(pagina, quantidadeDeRegistros);
+//
+//        assertNotNull(usuarioRolesDTOPageDTO);
+//        assertEquals();
+//        }
 //
 //    @Test
 //    public void deveTestarUpdateGestorAprovarComSucesso() throws RegraDeNegocioException {

@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
@@ -17,12 +18,15 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -76,6 +80,37 @@ public class UsuarioServiceTest {
         assertEquals(rolesEntity.getNome(), usuarioLoginComSucessoDTO.getRole());
     }
 
+    @Test
+    public void deveTestarSaveByAdminComSucesso() throws RegraDeNegocioException {
+        UsuarioCreateDTO usuarioCreateDTO = getUsuarioCreateDTO();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        RolesEntity rolesEntity = getRolesEntity();
+
+        when(rolesService.findByRole(anyString())).thenReturn(rolesEntity);
+        when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
+
+        UsuarioDTO usuarioDTO = usuarioService.saveByAdmin(usuarioCreateDTO, TipoRoles.ADMINISTRADOR);
+
+        assertNotNull(usuarioDTO);
+        assertEquals(usuarioEntity.getIdUsuario(), usuarioDTO.getIdUsuario());
+        assertEquals(usuarioEntity.getNome(), usuarioDTO.getNome());
+        assertEquals(usuarioEntity.getEmail(), usuarioDTO.getEmail());
+        assertEquals(usuarioEntity.getValorTotal(), usuarioDTO.getValorTotal());
+    }
+
+    @Test
+    public void deveTestarDeleteUserComSucesso() throws RegraDeNegocioException {
+        Optional<UsuarioEntity> usuarioEntityOptional = Optional.of(getUsuarioEntity());
+
+        when(usuarioRepository.findById(anyInt())).thenReturn(usuarioEntityOptional);
+
+        usuarioService.deleteUsuario(anyInt());
+
+        verify(usuarioRepository, times(1)).delete(any(UsuarioEntity.class));
+    }
+
+
+
     @Test(expected = RegraDeNegocioException.class)
     public void deveTestarSaveComFalhaNoTipoDeEmail() throws RegraDeNegocioException {
         UsuarioCreateDTO usuarioCreateDTO = getUsuarioCreateDTO();
@@ -91,17 +126,6 @@ public class UsuarioServiceTest {
         when(usuarioRepository.findByEmail(anyString())).thenReturn(Optional.of(usuarioEntity));
 
         usuarioService.save(usuarioCreateDTO);
-    }
-
-    @Test
-    public void deveTestarDeleteUser() throws RegraDeNegocioException {
-        Optional<UsuarioEntity> usuarioEntityOptional = Optional.of(getUsuarioEntity());
-
-        when(usuarioRepository.findById(anyInt())).thenReturn(usuarioEntityOptional);
-
-        usuarioService.deleteUsuario(anyInt());
-
-        verify(usuarioRepository, times(1)).delete(any(UsuarioEntity.class));
     }
 
     @Test
@@ -134,7 +158,7 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.findById(any(Integer.class))).thenReturn(Optional.of(usuarioEntity));
 
-        UsuarioDTO usuarioDTO = usuarioService.findUsuarioLogged();
+        UsuarioDTO usuarioDTO = usuarioService.listUsuarioLogged();
 
         assertNotNull(usuarioDTO);
         assertEquals(usuarioDTO.getIdUsuario(), usuarioEntity.getIdUsuario());
@@ -153,30 +177,12 @@ public class UsuarioServiceTest {
 
         when(usuarioRepository.findAll()).thenReturn(List.of(usuarioEntity));
 
-        List<UsuarioComposeDTO> usuarioComposeDTOS = usuarioService.listarTodosGestores();
+        List<UsuarioComposeDTO> usuarioComposeDTOS = usuarioService.listGestores();
 
         assertNotNull(usuarioComposeDTOS);
         assertEquals(usuarioComposeDTOS.get(0).getIdUsuario(), usuarioEntity.getIdUsuario());
         assertEquals(usuarioComposeDTOS.get(0).getNome(), usuarioEntity.getNome());
         assertEquals(usuarioComposeDTOS.get(0).getEmail(), usuarioEntity.getEmail());
-    }
-
-    @Test
-    public void deveTestarSaveByAdminComSucesso() throws RegraDeNegocioException {
-        UsuarioCreateDTO usuarioCreateDTO = getUsuarioCreateDTO();
-        UsuarioEntity usuarioEntity = getUsuarioEntity();
-        RolesEntity rolesEntity = getRolesEntity();
-
-        when(rolesService.findByRole(anyString())).thenReturn(rolesEntity);
-        when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
-
-        UsuarioDTO usuarioDTO = usuarioService.saveByAdmin(usuarioCreateDTO, TipoRoles.ADMINISTRADOR);
-
-        assertNotNull(usuarioDTO);
-        assertEquals(usuarioEntity.getIdUsuario(), usuarioDTO.getIdUsuario());
-        assertEquals(usuarioEntity.getNome(), usuarioDTO.getNome());
-        assertEquals(usuarioEntity.getEmail(), usuarioDTO.getEmail());
-        assertEquals(usuarioEntity.getValorTotal(), usuarioDTO.getValorTotal());
     }
 
     private UsuarioCreateDTO getUsuarioCreateDTO() {
