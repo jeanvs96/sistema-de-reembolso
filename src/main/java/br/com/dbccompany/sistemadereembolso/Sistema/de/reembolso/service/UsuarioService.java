@@ -1,6 +1,7 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.RolesDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
@@ -17,10 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -213,5 +211,18 @@ public class UsuarioService {
         log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
 
         return entityToDto(usuarioSalvo);
+    }
+
+    public List<UsuarioListDTO> findAll() {
+        List<UsuarioListDTO> usuarioListDTOS = new ArrayList<>();
+        usuarioRepository.findAll().forEach(usuarioEntity ->
+                usuarioListDTOS.add(entityToListDTO(usuarioEntity)));
+        return usuarioListDTOS;
+    }
+
+    public UsuarioListDTO entityToListDTO(UsuarioEntity usuarioEntity) {
+        UsuarioListDTO usuarioListDTO = objectMapper.convertValue(usuarioEntity, UsuarioListDTO.class);
+        usuarioListDTO.setRolesDTO(objectMapper.convertValue(usuarioEntity.getRolesEntities().stream().toList().get(0), RolesDTO.class));
+        return usuarioListDTO;
     }
 }

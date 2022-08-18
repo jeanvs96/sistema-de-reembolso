@@ -2,7 +2,6 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.UsuarioDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.LoginService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
@@ -38,10 +37,10 @@ public class UsuarioController implements UsuarioDocumentation {
         return new ResponseEntity<>(usuarioService.findUsuarioLogged(), HttpStatus.OK);
     }
 
-//    @GetMapping("/listar")
-//    public List<UsuarioRelatorioDTO> listarRelatorioUsuarios(){
-//        return usuarioService.listarUsuarios();
-//    }
+    @GetMapping("/listar")
+    public List<UsuarioListDTO> list(){
+        return usuarioService.findAll();
+    }
 
 //    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
 //    public ResponseEntity<String> ativarDesativarUsuario(@PathVariable("idUsuario") @Valid Integer idUsuario, @RequestParam AtivarDesativarUsuario ativarDesativarUsuario) throws RegraDeNegocioException {

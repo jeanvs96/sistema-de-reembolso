@@ -26,7 +26,7 @@ public class RolesService {
     public RolesDTO insertRole (TipoRoles tipoRoles){
         RolesEntity rolesEntity = new RolesEntity();
         rolesEntity.setNome(tipoRoles.getTipo());
-        return convertToDTO(rolesRepository.save(rolesEntity));
+        return entityToDTO(rolesRepository.save(rolesEntity));
     }
 
     public void removeRole (TipoRoles tipoRoles) {
@@ -39,21 +39,21 @@ public class RolesService {
 
     public List<RolesDTO> findAll () {
         return rolesRepository.findAll().stream()
-                .map(this::convertToDTO)
+                .map(this::entityToDTO)
                 .toList();
     }
     public RolesDTO updateRoleById (Integer idRole, TipoRoles tipoRoles){
         RolesEntity rolesEntity =  rolesRepository.findById(idRole).get();
         rolesEntity.setNome(tipoRoles.getTipo());
 
-        return convertToDTO(rolesRepository.save(rolesEntity));
+        return entityToDTO(rolesRepository.save(rolesEntity));
     }
 
 //   =============== METODOS AUXILIARES ====================
     private RolesEntity convertToEntity(RolesDTO rolesDTO) {
         return objectMapper.convertValue(rolesDTO, RolesEntity.class);
     }
-    private RolesDTO convertToDTO(RolesEntity rolesEntity) {
+    private RolesDTO entityToDTO(RolesEntity rolesEntity) {
         return objectMapper.convertValue(rolesEntity, RolesDTO.class);
     }
 }
