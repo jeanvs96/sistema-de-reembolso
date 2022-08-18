@@ -168,6 +168,20 @@ public class ReembolsoServiceTest {
     }
 
     @Test
+    public void deveTestarListAllByNomeUsuarioComSucesso() {
+
+        List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
+        Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
+
+        when(reembolsoRepository.findAllByLikeNome(anyString(), any(Pageable.class))).thenReturn(page);
+        when(reembolsoRepository.findAllByLikeNomeAndStatus(anyString(), anyInt(), any(Pageable.class))).thenReturn(page);
+
+        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByNomeUsuario("teste", StatusReembolso.ABERTO, 0, 10);
+
+        assertNotNull(reembolsoDTOPageDTO);
+    }
+
+    @Test
     public void deveTestarListAllReembolsoByStatusComSucesso() {
 
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());

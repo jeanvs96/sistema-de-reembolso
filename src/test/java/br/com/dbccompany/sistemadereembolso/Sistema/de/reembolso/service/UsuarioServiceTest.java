@@ -27,7 +27,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -111,7 +110,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarListAll() {
+    public void deveTestarListAllByNome() {
         Pageable pageable = PageRequest.of(0, 1);
         RolesEntity rolesEntity = getRolesEntity();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -124,6 +123,28 @@ public class UsuarioServiceTest {
         when(usuarioRepository.findAllByNomeContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(page);
 
         PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAllByNome(usuarioEntity.getNome(), 0, 1);
+
+        assertNotNull(usuarioRolesDTOPageDTO);
+        assertEquals(Integer.valueOf(0), usuarioRolesDTOPageDTO.getPage());
+        assertEquals(Long.valueOf(1), usuarioRolesDTOPageDTO.getTotalElements());
+        assertEquals(Integer.valueOf(1), usuarioRolesDTOPageDTO.getTotalPages());
+        assertEquals(page.getContent().get(0).getIdUsuario(), usuarioRolesDTOPageDTO.getContent().get(0).getIdUsuario());
+    }
+
+    @Test
+    public void deveTestarListAll() {
+        Pageable pageable = PageRequest.of(0, 1);
+        RolesEntity rolesEntity = getRolesEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        usuarioEntity.setRolesEntities(Set.of(rolesEntity));
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), List.of(usuarioEntity).size());
+        Page<UsuarioEntity> page = new PageImpl<>(List.of(usuarioEntity).subList(start, end), pageable, List.of(usuarioEntity).size());
+
+        when(usuarioRepository.findAll(any(Pageable.class))).thenReturn(page);
+
+        PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAll(0, 1);
 
         assertNotNull(usuarioRolesDTOPageDTO);
         assertEquals(Integer.valueOf(0), usuarioRolesDTOPageDTO.getPage());
