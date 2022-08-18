@@ -1,14 +1,11 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.AnexoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.RolesDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
@@ -19,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -95,14 +91,12 @@ public class UsuarioService {
     public PageDTO<UsuarioRolesDTO> listAll(Integer pagina, Integer quantidadeDeRegistros) {
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
         List<UsuarioRolesDTO> usuarioRolesDTOList = new ArrayList<>();
-        usuarioRepository.findAll().forEach(usuarioEntity ->
+
+        Page<UsuarioEntity> usuarioEntityPage = usuarioRepository.findAll(pageable);
+        usuarioEntityPage.getContent().forEach(usuarioEntity ->
                 usuarioRolesDTOList.add(entityToUsuarioRolesDTO(usuarioEntity)));
 
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), usuarioRolesDTOList.size());
-        Page<UsuarioRolesDTO> page = new PageImpl<>(usuarioRolesDTOList.subList(start, end), pageable, usuarioRolesDTOList.size());
-
-        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
+        return new PageDTO<>(usuarioEntityPage.getTotalElements(), usuarioEntityPage.getTotalPages(), pagina, quantidadeDeRegistros, usuarioRolesDTOList);
     }
 
     public List<UsuarioComposeDTO> listGestores() {
@@ -193,18 +187,5 @@ public class UsuarioService {
         UsuarioRolesDTO usuarioRolesDTO = objectMapper.convertValue(usuarioEntity, UsuarioRolesDTO.class);
         usuarioRolesDTO.setRolesDTO(objectMapper.convertValue(usuarioEntity.getRolesEntities().stream().toList().get(0), RolesDTO.class));
         return usuarioRolesDTO;
-    }
-
-    public List<ReembolsoDTO> entityToListReembolsoDTO(UsuarioEntity usuarioEntity) {
-        UsuarioComposeDTO usuarioComposeDTO = entityToComposeDto(usuarioEntity);
-        List<ReembolsoDTO> reembolsoDTOList = usuarioEntity.getReembolsoEntities().stream()
-                .map(reembolsoEntity -> {
-                    ReembolsoDTO reembolsoDTO = objectMapper.convertValue(reembolsoEntity, ReembolsoDTO.class);
-                    reembolsoDTO.setUsuario(usuarioComposeDTO);
-                    reembolsoDTO.setStatusDoReembolso(StatusReembolso.values()[reembolsoEntity.getStatus()].getTipo());
-                    reembolsoDTO.setAnexoDTO(objectMapper.convertValue(reembolsoEntity.getAnexosEntity(), AnexoDTO.class));
-                    return reembolsoDTO;
-                }).toList();
-        return reembolsoDTOList;
     }
 }

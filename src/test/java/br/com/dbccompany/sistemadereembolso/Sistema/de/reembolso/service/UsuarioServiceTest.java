@@ -18,6 +18,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,7 +28,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -34,7 +35,6 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -103,13 +103,34 @@ public class UsuarioServiceTest {
         Optional<UsuarioEntity> usuarioEntityOptional = Optional.of(getUsuarioEntity());
 
         when(usuarioRepository.findById(anyInt())).thenReturn(usuarioEntityOptional);
+        doNothing().when(usuarioRepository).delete(any(UsuarioEntity.class));
 
         usuarioService.deleteUsuario(anyInt());
 
         verify(usuarioRepository, times(1)).delete(any(UsuarioEntity.class));
     }
 
+    @Test
+    public void deveTestarListAll() {
+        Pageable pageable = PageRequest.of(0, 1);
+        RolesEntity rolesEntity = getRolesEntity();
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        usuarioEntity.setRolesEntities(Set.of(rolesEntity));
 
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), List.of(usuarioEntity).size());
+        Page<UsuarioEntity> page = new PageImpl<>(List.of(usuarioEntity).subList(start, end), pageable, List.of(usuarioEntity).size());
+
+        when(usuarioRepository.findAll(any(Pageable.class))).thenReturn(page);
+
+        PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAll(0, 1);
+
+        assertNotNull(usuarioRolesDTOPageDTO);
+        assertEquals(Integer.valueOf(0), usuarioRolesDTOPageDTO.getPage());
+        assertEquals(Long.valueOf(1), usuarioRolesDTOPageDTO.getTotalElements());
+        assertEquals(Integer.valueOf(1), usuarioRolesDTOPageDTO.getTotalPages());
+        assertEquals(page.getContent().get(0).getIdUsuario(), usuarioRolesDTOPageDTO.getContent().get(0).getIdUsuario());
+    }
 
     @Test(expected = RegraDeNegocioException.class)
     public void deveTestarSaveComFalhaNoTipoDeEmail() throws RegraDeNegocioException {
