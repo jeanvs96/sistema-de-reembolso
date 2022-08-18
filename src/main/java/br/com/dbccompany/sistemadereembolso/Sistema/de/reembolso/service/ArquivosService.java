@@ -26,7 +26,7 @@ public class ArquivosService {
     private final ReembolsoService reembolsoService;
     private final ReembolsoRepository reembolsoRepository;
 
-    public FotosEntity saveFoto(MultipartFile file) throws IOException, RegraDeNegocioException {
+    public String saveFoto(MultipartFile file) throws IOException, RegraDeNegocioException {
         FotosEntity fotosEntity = new FotosEntity();
         fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
         fotosEntity.setTipo(file.getContentType());
@@ -38,11 +38,11 @@ public class ArquivosService {
         usuarioEntity.setFotosEntity(arquivoEntitySalvo);
         usuarioRepository.save(usuarioEntity);
 
-        return arquivoEntitySalvo;
+        return "Foto salva com sucesso";
     }
 
 
-    public AnexosEntity saveAnexo(MultipartFile file, Integer idReembolso) throws IOException, RegraDeNegocioException {
+    public String saveAnexo(MultipartFile file, Integer idReembolso) throws IOException, RegraDeNegocioException {
         AnexosEntity anexosEntity = new AnexosEntity();
         anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
         anexosEntity.setTipo(file.getContentType());
@@ -56,7 +56,7 @@ public class ArquivosService {
 
         reembolsoRepository.save(reembolsoEntity);
 
-        return anexosEntitySalvo;
+        return "Arquivo salvo com sucesso";
     }
 
 
