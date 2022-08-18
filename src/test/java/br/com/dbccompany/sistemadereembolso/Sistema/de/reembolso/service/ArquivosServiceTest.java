@@ -104,7 +104,7 @@ public class ArquivosServiceTest {
 
     private static FotosEntity getFotosEntity() {
         FotosEntity fotosEntity = new FotosEntity();
-        fotosEntity.setIdArquivos(1);
+        fotosEntity.setIdFotos(1);
         fotosEntity.setNome("self");
         fotosEntity.setUsuarioEntity(getUsuarioEntity());
         return fotosEntity;
