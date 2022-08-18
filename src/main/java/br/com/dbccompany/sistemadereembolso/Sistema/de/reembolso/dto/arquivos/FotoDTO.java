@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class FotoDTO {
-    private Integer idFoto;
+    private Integer idFotos;
     private String nome;
     private String tipo;
     private byte[] data;

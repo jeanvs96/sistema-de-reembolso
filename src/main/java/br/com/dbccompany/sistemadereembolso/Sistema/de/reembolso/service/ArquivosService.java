@@ -10,11 +10,16 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.Foto
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 
 @Service
 @RequiredArgsConstructor
@@ -31,12 +36,17 @@ public class ArquivosService {
         fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
         fotosEntity.setTipo(file.getContentType());
         fotosEntity.setData(file.getBytes());
+        UsuarioEntity usuarioEntityLogado = usuarioService.getLoggedUser();
+        FotosEntity fotosEntityRecuperada = usuarioEntityLogado.getFotosEntity();
+
+        if (!(fotosEntityRecuperada == null)) {
+        fotosEntity.setIdFotos(usuarioEntityLogado.getFotosEntity().getIdFotos());
+        }
 
         FotosEntity arquivoEntitySalvo = fotosRepository.save(fotosEntity);
 
-        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
-        usuarioEntity.setFotosEntity(arquivoEntitySalvo);
-        usuarioRepository.save(usuarioEntity);
+        usuarioEntityLogado.setFotosEntity(arquivoEntitySalvo);
+        usuarioRepository.save(usuarioEntityLogado);
 
         return "Foto salva com sucesso";
     }
@@ -47,14 +57,19 @@ public class ArquivosService {
         anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
         anexosEntity.setTipo(file.getContentType());
         anexosEntity.setData(file.getBytes());
+        UsuarioEntity usuarioEntityRecuperado = usuarioService.getLoggedUser();
+        ReembolsoEntity reembolsoEntityRecuperado = reembolsoService.findByIdAndUsuarioEntity(idReembolso, usuarioEntityRecuperado);
+        AnexosEntity anexosEntityRecuperado = reembolsoEntityRecuperado.getAnexosEntity();
+
+        if (!(anexosEntityRecuperado == null)) {
+            anexosEntity.setIdAnexos(anexosEntityRecuperado.getIdAnexos());
+        }
 
         AnexosEntity anexosEntitySalvo = anexosRepository.save(anexosEntity);
 
-        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
-        ReembolsoEntity reembolsoEntity = reembolsoService.findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
-        reembolsoEntity.setAnexosEntity(anexosEntitySalvo);
+        reembolsoEntityRecuperado.setAnexosEntity(anexosEntitySalvo);
 
-        reembolsoRepository.save(reembolsoEntity);
+        reembolsoRepository.save(reembolsoEntityRecuperado);
 
         return "Arquivo salvo com sucesso";
     }

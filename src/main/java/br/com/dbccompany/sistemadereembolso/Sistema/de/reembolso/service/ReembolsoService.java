@@ -51,7 +51,7 @@ public class ReembolsoService {
 
         for (UsuarioComposeDTO gestor : gestores) {
             log.info(gestor.getEmail());
-            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
+//            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
         }
 
         ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoSavedEntity);
@@ -61,9 +61,9 @@ public class ReembolsoService {
     }
 
     public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
-        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoAtualizado;
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
+        UsuarioEntity usuarioLogadoEntity = reembolsoEntity.getUsuarioEntity();
 
         reembolsoEntity.setDataUltimaAlteracao(LocalDateTime.now());
 
@@ -92,8 +92,8 @@ public class ReembolsoService {
     }
 
     public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
-        UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
+        UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
         ReembolsoEntity reembolsoAtualizado;
 
         if (pagar) {
@@ -110,11 +110,13 @@ public class ReembolsoService {
             log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
         }
 
-        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() - reembolsoAtualizado.getValor());
-        usuarioRepository.save(usuarioLogadoEntity);
+        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal() - reembolsoAtualizado.getValor());
+        usuarioRepository.save(usuarioEntity);
+
         reembolsoAtualizado.setDataUltimaAlteracao(LocalDateTime.now());
         return entityToDTO(reembolsoAtualizado);
     }
+
     public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
         Page<ReembolsoEntity> reembolsosEntities;
