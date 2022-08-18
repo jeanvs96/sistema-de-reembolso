@@ -4,7 +4,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.Roles
 import lombok.Data;
 
 @Data
-public class UsuarioListDTO{
+public class UsuarioRolesDTO {
     private Integer idUsuario;
     private String nome;
     private String email;

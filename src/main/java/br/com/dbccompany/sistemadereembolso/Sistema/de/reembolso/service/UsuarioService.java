@@ -1,11 +1,12 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.arquivos.FotoDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.RolesDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.AtivarDesativarUsuario;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
@@ -14,6 +15,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -47,7 +52,7 @@ public class UsuarioService {
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
-        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
+        log.info("Usuário " + usuarioSalvo.getNome() + " com id: " + usuarioSalvo.getIdUsuario() + " foi criado com sucesso!");
 
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioSalvo, expiration));
@@ -83,7 +88,7 @@ public class UsuarioService {
 
         usuarioRepository.delete(usuarioDeletar);
 
-        log.info("Usuário "+ nome+ " com id: "+idUsuario+" foi deletado com sucesso!");
+        log.info("Usuário " + nome + " com id: " + idUsuario + " foi deletado com sucesso!");
     }
 
     public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
@@ -112,7 +117,7 @@ public class UsuarioService {
         return entityToDto(getLoggedUser());
     }
 
-//    public List<UsuarioRelatorioDTO> listarUsuarios (){
+    //    public List<UsuarioRelatorioDTO> listarUsuarios (){
 //        List<UsuarioRelatorioDTO> all = usuarioRepository.findAll().stream()
 //                .map(user-> {
 //                    UsuarioRelatorioDTO usuarioRelatorioDTO = objectMapper.convertValue(user, UsuarioRelatorioDTO.class);
@@ -123,11 +128,11 @@ public class UsuarioService {
 //                .toList();
 //        return all;
 //    }
-    public List<UsuarioComposeDTO> listarTodosGestores (){
+    public List<UsuarioComposeDTO> listarTodosGestores() {
         List<UsuarioComposeDTO> listByCargo = usuarioRepository.findAll().stream()
-                .filter(user-> user.getRolesEntities()
+                .filter(user -> user.getRolesEntities()
                         .stream()
-                        .anyMatch(role-> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
+                        .anyMatch(role -> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
                 .map(this::entityToComposeDto)
                 .toList();
         return listByCargo;
@@ -161,7 +166,7 @@ public class UsuarioService {
 
     public void verificarHostEmail(String email) throws RegraDeNegocioException {
         String[] emailSplit = email.split("@");
-        if (!EMAIL_HOST.equals(emailSplit[1])){
+        if (!EMAIL_HOST.equals(emailSplit[1])) {
             throw new RegraDeNegocioException("Insira um email DBC válido");
         }
     }
@@ -171,6 +176,7 @@ public class UsuarioService {
         UsuarioEntity usuarioEntity = findById(idLoggedUser);
         return usuarioEntity;
     }
+
     public Integer getIdLoggedUser() {
         Object principal = SecurityContextHolder
                 .getContext()
@@ -208,21 +214,52 @@ public class UsuarioService {
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
-        log.info("Usuário "+ usuarioSalvo.getNome()+ " com id: "+usuarioSalvo.getIdUsuario()+" foi criado com sucesso!");
+        log.info("Usuário " + usuarioSalvo.getNome() + " com id: " + usuarioSalvo.getIdUsuario() + " foi criado com sucesso!");
 
         return entityToDto(usuarioSalvo);
     }
 
-    public List<UsuarioListDTO> findAll() {
-        List<UsuarioListDTO> usuarioListDTOS = new ArrayList<>();
+    public PageDTO<UsuarioRolesDTO> findAll(Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        List<UsuarioRolesDTO> usuarioRolesDTOList = new ArrayList<>();
         usuarioRepository.findAll().forEach(usuarioEntity ->
-                usuarioListDTOS.add(entityToListDTO(usuarioEntity)));
-        return usuarioListDTOS;
+                usuarioRolesDTOList.add(entityToUsuarioRolesDTO(usuarioEntity)));
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), usuarioRolesDTOList.size());
+        Page<UsuarioRolesDTO> page = new PageImpl<>(usuarioRolesDTOList.subList(start, end), pageable, usuarioRolesDTOList.size());
+
+        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
     }
 
-    public UsuarioListDTO entityToListDTO(UsuarioEntity usuarioEntity) {
-        UsuarioListDTO usuarioListDTO = objectMapper.convertValue(usuarioEntity, UsuarioListDTO.class);
-        usuarioListDTO.setRolesDTO(objectMapper.convertValue(usuarioEntity.getRolesEntities().stream().toList().get(0), RolesDTO.class));
-        return usuarioListDTO;
+    public PageDTO<ReembolsoDTO> findAllByNome(String nome, Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        List<ReembolsoDTO> reembolsoDTOList = new ArrayList<>();
+        usuarioRepository.findAllByLikeNome(nome).forEach(usuarioEntity -> {
+            reembolsoDTOList.addAll(entityToListReembolsoDTO(usuarioEntity));
+        });
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), reembolsoDTOList.size());
+        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOList.subList(start, end), pageable, reembolsoDTOList.size());
+
+        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
+    }
+
+    public UsuarioRolesDTO entityToUsuarioRolesDTO(UsuarioEntity usuarioEntity) {
+        UsuarioRolesDTO usuarioRolesDTO = objectMapper.convertValue(usuarioEntity, UsuarioRolesDTO.class);
+        usuarioRolesDTO.setRolesDTO(objectMapper.convertValue(usuarioEntity.getRolesEntities().stream().toList().get(0), RolesDTO.class));
+        return usuarioRolesDTO;
+    }
+
+    public List<ReembolsoDTO> entityToListReembolsoDTO(UsuarioEntity usuarioEntity) {
+        UsuarioComposeDTO usuarioComposeDTO = entityToComposeDto(usuarioEntity);
+       List<ReembolsoDTO> reembolsoDTOList = usuarioEntity.getReembolsoEntities().stream()
+                .map(reembolsoEntity -> {
+                    ReembolsoDTO reembolsoDTO = objectMapper.convertValue(reembolsoEntity, ReembolsoDTO.class);
+                    reembolsoDTO.setUsuario(usuarioComposeDTO);
+                    return reembolsoDTO;
+                }).toList();
+        return reembolsoDTOList;
     }
 }

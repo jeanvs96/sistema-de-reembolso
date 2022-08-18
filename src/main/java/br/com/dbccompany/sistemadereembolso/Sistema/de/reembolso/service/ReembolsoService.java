@@ -193,13 +193,7 @@ public class ReembolsoService {
 
     //  ===================== METODOS AUXILIARES ====================
 
-//    private PageDTO<ReembolsoDTO> getPageFromList(Integer pagina, Integer quantidadeDeRegistros, Pageable pageable, List<ReembolsoDTO> reembolsoDTOList) {
-//        int start = (int) pageable.getOffset();
-//        int end = Math.min((start + pageable.getPageSize()), reembolsoDTOList.size());
-//        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOList.subList(start, end), pageable, reembolsoDTOList.size());
-//
-//        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
-//    }
+
 
     public ReembolsoEntity findByIdAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity) throws RegraDeNegocioException {
         return reembolsoRepository.findByIdReembolsoAndUsuarioEntity(idReembolso, usuarioEntity).orElseThrow(() -> new RegraDeNegocioException("Reembolso não encontrado"));
@@ -220,4 +214,6 @@ public class ReembolsoService {
         reembolsoDTO.setAnexoDTO(objectMapper.convertValue(reembolsoEntity.getAnexosEntity(), AnexoDTO.class));
         return reembolsoDTO;
     }
+
+
 }

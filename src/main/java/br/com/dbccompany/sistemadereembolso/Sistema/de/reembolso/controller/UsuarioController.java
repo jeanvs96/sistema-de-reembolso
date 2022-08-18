@@ -1,6 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.UsuarioDocumentation;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.LoginService;
@@ -38,8 +40,13 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @GetMapping("/listar")
-    public List<UsuarioListDTO> list(){
-        return usuarioService.findAll();
+    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros){
+        return usuarioService.findAll(pagina, quantidadeDeRegistros);
+    }
+
+    @GetMapping("/listar/nome")
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, Integer pagina, Integer quantidadeDeRegistros){
+        return new ResponseEntity<>(usuarioService.findAllByNome(nome, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
 //    @PutMapping("/ativar-desativar-usuario/{idUsuario}")
