@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -34,7 +33,7 @@ public class ReembolsoService {
     private final EmailService emailService;
     private final ObjectMapper objectMapper;
 
-    public ReembolsoDTO create(ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
+    public ReembolsoDTO save(ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
 
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
@@ -118,28 +117,6 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
-        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
-        Page<ReembolsoEntity> reembolsosEntities;
-
-        if (statusReembolso.equals(StatusReembolso.TODOS)) {
-            reembolsosEntities = reembolsoRepository.findAllOrderByStatusAndDate(pageable);
-        } else {
-            reembolsosEntities = reembolsoRepository.findAllByStatusOrderByDataEntradaAsc(statusReembolso.ordinal(), pageable);
-        }
-
-        List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream().map(reembolsoEntity -> {
-            ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
-            return reembolsoDTO;
-        }).toList();
-
-        PageDTO<ReembolsoDTO> pageDTO = new PageDTO<>(reembolsosEntities.getTotalElements(), reembolsosEntities.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
-
-        return pageDTO;
-    }
-
-    //    =================== METODOS DO PROPRIO USUARIO LOGADO ========================
-
     public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
         UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntityRecuperado = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
@@ -157,6 +134,55 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
+    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.getLoggedUser());
+
+        reembolsoRepository.delete(reembolsoEntity);
+
+        log.info("Reembolso deletado com sucesso.");
+
+        return listAllByLoggedUserAndStatus(StatusReembolso.TODOS, pagina, quantidadeDeRegistros);
+    }
+
+    public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        Page<ReembolsoEntity> reembolsosEntities;
+
+        if (statusReembolso.equals(StatusReembolso.TODOS)) {
+            reembolsosEntities = reembolsoRepository.findAllOrderByStatusAndDate(pageable);
+        } else {
+            reembolsosEntities = reembolsoRepository.findAllByStatusOrderByDataEntradaAsc(statusReembolso.ordinal(), pageable);
+        }
+
+        List<ReembolsoDTO> reembolsoDTOS = reembolsosEntities.stream().map(reembolsoEntity -> {
+            ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
+            return reembolsoDTO;
+        }).toList();
+
+        return new PageDTO<>(reembolsosEntities.getTotalElements(), reembolsosEntities.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
+    }
+
+    public PageDTO<ReembolsoDTO> listAllByNomeUsuario(String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        Page<ReembolsoEntity> reembolsoEntityPage;
+
+        List<ReembolsoDTO> reembolsoDTOList = new ArrayList<>();
+
+        if (statusReembolso.equals(StatusReembolso.TODOS)) {
+            reembolsoEntityPage = reembolsoRepository.findAllByLikeNome(nome, pageable);
+            reembolsoEntityPage.getContent().forEach(reembolsoEntity -> {
+                reembolsoDTOList.add(entityToDTO(reembolsoEntity));
+            });
+        } else {
+            reembolsoEntityPage = reembolsoRepository.findAllByLikeNomeAndStatus(nome, statusReembolso.ordinal(), pageable);
+            reembolsoEntityPage.forEach(reembolsoEntity -> {
+                reembolsoDTOList.add(entityToDTO(reembolsoEntity));
+            });
+        }
+
+        return new PageDTO<>(reembolsoEntityPage.getTotalElements(), reembolsoEntityPage.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOList);
+    }
+
     public PageDTO<ReembolsoDTO> listAllByLoggedUserAndStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
         Page<ReembolsoEntity> reembolsosEntities;
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
@@ -172,27 +198,15 @@ public class ReembolsoService {
             ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoEntity);
             return reembolsoDTO;
         }).toList();
-        PageDTO<ReembolsoDTO> pageDTO = new PageDTO<>(reembolsosEntities.getTotalElements(), reembolsosEntities.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
-        return pageDTO;}
+
+        return new PageDTO<>(reembolsosEntities.getTotalElements(), reembolsosEntities.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
+    }
 
     public ReembolsoDTO listById(Integer idReembolso) throws RegraDeNegocioException {
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
 
         return entityToDTO(reembolsoEntity);
     }
-
-    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
-        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.getLoggedUser());
-
-        reembolsoRepository.delete(reembolsoEntity);
-
-        log.info("Reembolso deletado com sucesso.");
-
-        return listAllByLoggedUserAndStatus(StatusReembolso.TODOS, pagina, quantidadeDeRegistros);
-    }
-
-
-    //  ===================== METODOS AUXILIARES ====================
 
 
 
@@ -215,20 +229,4 @@ public class ReembolsoService {
         reembolsoDTO.setAnexoDTO(objectMapper.convertValue(reembolsoEntity.getAnexosEntity(), AnexoDTO.class));
         return reembolsoDTO;
     }
-
-    public PageDTO<ReembolsoDTO> listAllByNome(String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
-        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
-        List<ReembolsoDTO> reembolsoDTOList = new ArrayList<>();
-        reembolsoRepository.findAllByLikeNome(nome, statusReembolso.ordinal()).forEach(reembolsoEntity -> {
-            reembolsoDTOList.add(entityToDTO(reembolsoEntity));
-        });
-
-        int start = (int) pageable.getOffset();
-        int end = Math.min((start + pageable.getPageSize()), reembolsoDTOList.size());
-        Page<ReembolsoDTO> page = new PageImpl<>(reembolsoDTOList.subList(start, end), pageable, reembolsoDTOList.size());
-
-        return new PageDTO<>(page.getTotalElements(), page.getTotalPages(), pagina, quantidadeDeRegistros, page.getContent());
-    }
-
-
 }

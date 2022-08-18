@@ -42,8 +42,8 @@ public class UsuarioController implements UsuarioDocumentation {
         return new ResponseEntity<>(usuarioService.listUsuarioLogged(), HttpStatus.OK);
     }
 
-    @GetMapping("/listar")
-    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros){
-        return usuarioService.listAll(pagina, quantidadeDeRegistros);
+    @GetMapping("/listar/nome")
+    public PageDTO<UsuarioRolesDTO> list(String nome, Integer pagina, Integer quantidadeDeRegistros){
+        return usuarioService.listAll(nome, pagina, quantidadeDeRegistros);
     }
 }

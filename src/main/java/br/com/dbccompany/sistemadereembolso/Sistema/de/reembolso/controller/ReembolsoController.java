@@ -12,8 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/reembolso")
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class ReembolsoController {
 
     @PostMapping("/create")
     public ResponseEntity<ReembolsoDTO> create(@RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
-        return new ResponseEntity<>(reembolsoService.create(reembolsoCreateDTO), HttpStatus.OK);
+        return new ResponseEntity<>(reembolsoService.save(reembolsoCreateDTO), HttpStatus.OK);
     }
 
     @GetMapping("/list/status")
@@ -43,7 +41,7 @@ public class ReembolsoController {
 
     @GetMapping("/list/nome/status")
     public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
-        return new ResponseEntity<>(reembolsoService.listAllByNome(nome, statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
+        return new ResponseEntity<>(reembolsoService.listAllByNomeUsuario(nome, statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
     @PutMapping("/logged/update/{idReembolso}")

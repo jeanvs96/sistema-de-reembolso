@@ -121,9 +121,9 @@ public class UsuarioServiceTest {
         int end = Math.min((start + pageable.getPageSize()), List.of(usuarioEntity).size());
         Page<UsuarioEntity> page = new PageImpl<>(List.of(usuarioEntity).subList(start, end), pageable, List.of(usuarioEntity).size());
 
-        when(usuarioRepository.findAll(any(Pageable.class))).thenReturn(page);
+        when(usuarioRepository.findAllByNomeContainsIgnoreCase(anyString(), any(Pageable.class))).thenReturn(page);
 
-        PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAll(0, 1);
+        PageDTO<UsuarioRolesDTO> usuarioRolesDTOPageDTO = usuarioService.listAll(usuarioEntity.getNome(), 0, 1);
 
         assertNotNull(usuarioRolesDTOPageDTO);
         assertEquals(Integer.valueOf(0), usuarioRolesDTOPageDTO.getPage());

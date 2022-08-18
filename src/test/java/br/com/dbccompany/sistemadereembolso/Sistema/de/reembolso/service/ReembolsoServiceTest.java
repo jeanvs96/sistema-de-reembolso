@@ -68,8 +68,8 @@ public class ReembolsoServiceTest {
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoSavedEntity);
         doNothing().when(emailService).sendEmail(any(ReembolsoEntity.class), anyString());
-        when(usuarioService.listarTodosGestores()).thenReturn(gestores);
-        ReembolsoDTO reembolsoSavedDTO = reembolsoService.create(reembolsoCreateDTO);
+        when(usuarioService.listGestores()).thenReturn(gestores);
+        ReembolsoDTO reembolsoSavedDTO = reembolsoService.save(reembolsoCreateDTO);
 
         assertNotNull(reembolsoSavedDTO);
         assertEquals("Aluguel carro", reembolsoSavedDTO.getTitulo());

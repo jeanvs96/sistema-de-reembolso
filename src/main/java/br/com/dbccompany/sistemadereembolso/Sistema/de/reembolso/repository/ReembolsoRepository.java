@@ -32,5 +32,12 @@ public interface ReembolsoRepository extends JpaRepository<ReembolsoEntity, Inte
             " join r.usuarioEntity u" +
             " where upper(u.nome) like concat('%',upper(:nome),'%') and r.status = :status" +
             " order by u.nome")
-    List<ReembolsoEntity> findAllByLikeNome(@Param("nome") String nome, @Param("status") Integer status);
+    Page<ReembolsoEntity> findAllByLikeNomeAndStatus(@Param("nome") String nome, @Param("status") Integer status, Pageable pageable);
+
+    @Query("select r" +
+            " from reembolso r" +
+            " join r.usuarioEntity u" +
+            " where upper(u.nome) like concat('%',upper(:nome),'%')" +
+            " order by u.nome, r.status")
+    Page<ReembolsoEntity> findAllByLikeNome(@Param("nome") String nome, Pageable pageable);
 }
