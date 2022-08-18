@@ -8,7 +8,6 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEnt
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -87,7 +86,18 @@ public class UsuarioService {
         log.info("Usuário " + nome + " com id: " + idUsuario + " foi deletado com sucesso!");
     }
 
-    public PageDTO<UsuarioRolesDTO> listAll(String nome, Integer pagina, Integer quantidadeDeRegistros) {
+    public PageDTO<UsuarioRolesDTO> listAll(Integer pagina, Integer quantidadeDeRegistros) {
+        Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
+        List<UsuarioRolesDTO> usuarioRolesDTOList = new ArrayList<>();
+
+        Page<UsuarioEntity> usuarioEntityPage = usuarioRepository.findAll(pageable);
+        usuarioEntityPage.getContent().forEach(usuarioEntity ->
+                usuarioRolesDTOList.add(entityToUsuarioRolesDTO(usuarioEntity)));
+
+        return new PageDTO<>(usuarioEntityPage.getTotalElements(), usuarioEntityPage.getTotalPages(), pagina, quantidadeDeRegistros, usuarioRolesDTOList);
+    }
+
+    public PageDTO<UsuarioRolesDTO> listAllByNome(String nome, Integer pagina, Integer quantidadeDeRegistros) {
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
         List<UsuarioRolesDTO> usuarioRolesDTOList = new ArrayList<>();
 

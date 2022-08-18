@@ -43,7 +43,12 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @GetMapping("/listar/nome")
-    public PageDTO<UsuarioRolesDTO> list(String nome, Integer pagina, Integer quantidadeDeRegistros){
-        return usuarioService.listAll(nome, pagina, quantidadeDeRegistros);
+    public PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros){
+        return usuarioService.listAllByNome(nome, pagina, quantidadeDeRegistros);
+    }
+
+    @GetMapping("/listar")
+    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros){
+        return usuarioService.listAll(pagina, quantidadeDeRegistros);
     }
 }
