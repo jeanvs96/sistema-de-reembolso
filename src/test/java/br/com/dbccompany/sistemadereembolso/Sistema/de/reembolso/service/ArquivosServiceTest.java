@@ -58,14 +58,9 @@ public class ArquivosServiceTest {
         usuarioEntity.setFotosEntity(foto);
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
 
-        FotosEntity fotosEntitySaved = arquivosService.saveFoto(file);
+        String stringSucesso = arquivosService.saveFoto(file);
 
-        assertNotNull(fotosEntitySaved);
-        assertNotNull(usuarioEntity);
-        assertNotNull(usuarioEntity.getFotosEntity());
-        assertEquals("Foto Teste", usuarioEntity.getFotosEntity().getNome());
-        assertEquals("Foto Teste", fotosEntitySaved.getNome());
-        assertNotNull(usuarioEntity.getFotosEntity().getData());
+        assertNotNull(stringSucesso);
 
     }
 
@@ -91,12 +86,9 @@ public class ArquivosServiceTest {
         when(anexosRepository.save(any(AnexosEntity.class))).thenReturn(anexosEntity);
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
 
-        AnexosEntity anexosEntitySaved = arquivosService.saveAnexo(file, 1);
+        String stringSucesso = arquivosService.saveAnexo(file, 1);
 
-        assertNotNull(anexosEntitySaved);
-        assertNotNull(anexosEntitySaved.getReembolsoEntity());
-        assertNotNull(anexosEntitySaved.getData());
-        assertEquals("Anexo1", anexosEntity.getNome());
+        assertNotNull(stringSucesso);
     }
 
     private static UsuarioEntity getUsuarioEntity() {
