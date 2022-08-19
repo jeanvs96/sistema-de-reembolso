@@ -15,9 +15,6 @@ public class EmailDTO {
     @Schema(description = "Email do usuário.")
     private String email;
 
-    @Schema(description = "Foto do reembolso.")
-    private String foto;
-
     @Schema(description = "Status do reembolso.")
     private StatusReembolso status;
 }
