@@ -1,9 +1,11 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.config.MultipartFileDataReader;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.AnexosRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.FotosRepository;
@@ -18,11 +20,8 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,10 +40,12 @@ public class ArquivosServiceTest {
     private ReembolsoService reembolsoService;
     @Mock
     private ReembolsoRepository reembolsoRepository;
+    @Mock
+    private MultipartFileDataReader multipartFileDataReader;
 
 
     @Test
-    public void deveTestarSaveFotoComSucesso() throws RegraDeNegocioException, IOException {
+    public void deveTestarSaveFotoComSucesso() throws EntidadeNaoEncontradaException, IOException, RegraDeNegocioException {
 
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
 
@@ -65,8 +66,17 @@ public class ArquivosServiceTest {
 
     }
 
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarSaveFoto() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+
+        when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
+
+        arquivosService.saveFoto(file);
+    }
+
     @Test
-    public void deveTestarSaveAnexoComSucesso() throws RegraDeNegocioException, IOException {
+    public void deveTestarSaveAnexoComSucesso() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
 
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -80,7 +90,7 @@ public class ArquivosServiceTest {
         AnexosEntity anexosEntity = new AnexosEntity();
         anexosEntity.setIdAnexos(1);
         anexosEntity.setNome("Anexo1");
-        anexosEntity.setData(file.getBytes());
+        anexosEntity.setData(file.getInputStream().readAllBytes());
         anexosEntity.setReembolsoEntity(reembolsoEntity);
 
         reembolsoEntity.setAnexosEntity(anexosEntity);
@@ -90,6 +100,15 @@ public class ArquivosServiceTest {
         String stringSucesso = arquivosService.saveAnexo(file, 1);
 
         assertNotNull(stringSucesso);
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarSaveAnexo() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+
+        when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
+
+        arquivosService.saveAnexo(file, 1);
     }
 
     private static UsuarioEntity getUsuarioEntity() {

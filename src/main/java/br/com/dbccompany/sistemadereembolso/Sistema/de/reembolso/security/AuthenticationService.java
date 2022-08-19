@@ -1,6 +1,5 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security;
 
-
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +7,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 
 @Service
@@ -21,6 +19,5 @@ public class AuthenticationService implements UserDetailsService {
         Optional<UsuarioEntity> optionalUserLogin = usuarioService.findByEmail(email);
         return optionalUserLogin
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário Inválido"));
-
     }
 }

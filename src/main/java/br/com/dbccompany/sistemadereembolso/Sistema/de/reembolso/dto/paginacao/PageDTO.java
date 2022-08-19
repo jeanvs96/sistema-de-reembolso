@@ -2,14 +2,12 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
-
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-@Builder
 public class PageDTO<T> {
     @Schema(description = "Quantidade de elementos")
     private Long totalElements;

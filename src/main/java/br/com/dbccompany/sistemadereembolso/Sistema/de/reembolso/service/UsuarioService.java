@@ -7,6 +7,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
@@ -77,7 +78,7 @@ public class UsuarioService {
         return entityToDto(usuarioSalvo);
     }
 
-    public void deleteUsuario(Integer idUsuario) throws RegraDeNegocioException {
+    public void deleteUsuario(Integer idUsuario) throws EntidadeNaoEncontradaException {
         UsuarioEntity usuarioDeletar = findById(idUsuario);
         String nome = usuarioDeletar.getNome();
 
@@ -118,11 +119,11 @@ public class UsuarioService {
         return listByCargo;
     }
 
-    public UsuarioDTO listUsuarioLogged() throws RegraDeNegocioException {
+    public UsuarioDTO listUsuarioLogged() throws EntidadeNaoEncontradaException {
         return entityToDto(getLoggedUser());
     }
 
-    public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
+    public UsuarioDTO atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntityRecuperado = findById(idUsuario);
         RolesEntity rolesEntity = rolesService.findByRole(role.getTipo());
         usuarioRolesService.deleteAllByIdUsuario(idUsuario);
@@ -136,8 +137,8 @@ public class UsuarioService {
         return entityToDto(usuarioEntityAtualizado);
     }
 
-    public UsuarioEntity findById(Integer idUsuario) throws RegraDeNegocioException {
-        return usuarioRepository.findById(idUsuario).orElseThrow(() -> new RegraDeNegocioException("Usuário não encontrado"));
+    public UsuarioEntity findById(Integer idUsuario) throws EntidadeNaoEncontradaException {
+        return usuarioRepository.findById(idUsuario).orElseThrow(() -> new EntidadeNaoEncontradaException("Usuário não encontrado"));
     }
 
     public Optional<UsuarioEntity> findByEmail(String email) {
@@ -150,7 +151,7 @@ public class UsuarioService {
         }
     }
 
-    public UsuarioEntity getLoggedUser() throws RegraDeNegocioException {
+    public UsuarioEntity getLoggedUser() throws EntidadeNaoEncontradaException {
         Integer idLoggedUser = getIdLoggedUser();
         UsuarioEntity usuarioEntity = findById(idLoggedUser);
         return usuarioEntity;

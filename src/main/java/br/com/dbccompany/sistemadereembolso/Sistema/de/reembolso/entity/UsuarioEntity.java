@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
 import java.util.Collection;
 import java.util.Set;
@@ -51,9 +50,7 @@ public class UsuarioEntity implements UserDetails {
     private Set<RolesEntity> rolesEntities;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "usuarioEntity",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.MERGE)
+    @OneToMany(mappedBy = "usuarioEntity", fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     private Set<ReembolsoEntity> reembolsoEntities;
 
     @Override

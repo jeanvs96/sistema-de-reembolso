@@ -1,7 +1,5 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums;
 
-import java.util.Arrays;
-
 public enum TipoRoles {
     COLABORADOR("ROLE_COLABORADOR"),
     GESTOR("ROLE_GESTOR"),
@@ -16,12 +14,5 @@ public enum TipoRoles {
 
     public String getTipo() {
         return tipoRoles;
-    }
-
-    public static TipoRoles ofTipo(String tipoRoles) {
-        return Arrays.stream(TipoRoles.values())
-                .filter(tp -> tp.getTipo().equals(tipoRoles))
-                .findFirst()
-                .get();
     }
 }

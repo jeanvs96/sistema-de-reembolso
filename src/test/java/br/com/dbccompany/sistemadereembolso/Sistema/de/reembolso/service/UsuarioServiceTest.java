@@ -5,6 +5,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
@@ -98,7 +99,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarDeleteUserComSucesso() throws RegraDeNegocioException {
+    public void deveTestarDeleteUserComSucesso() throws EntidadeNaoEncontradaException {
         Optional<UsuarioEntity> usuarioEntityOptional = Optional.of(getUsuarioEntity());
 
         when(usuarioRepository.findById(anyInt())).thenReturn(usuarioEntityOptional);
@@ -171,7 +172,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarAtribuirRoleComSucesso() throws RegraDeNegocioException {
+    public void deveTestarAtribuirRoleComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         RolesEntity rolesEntity = getRolesEntity();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         usuarioEntity.setRolesEntities(Set.of(rolesEntity));
@@ -191,7 +192,7 @@ public class UsuarioServiceTest {
     }
 
     @Test
-    public void deveTestarFindUsuarioLoggedComSucesso() throws RegraDeNegocioException {
+    public void deveTestarFindUsuarioLoggedComSucesso() throws EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = getUsuarioEntity();
 
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

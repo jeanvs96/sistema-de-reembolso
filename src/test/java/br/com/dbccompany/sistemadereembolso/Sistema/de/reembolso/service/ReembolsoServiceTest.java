@@ -7,6 +7,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.Usu
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
@@ -27,6 +28,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -58,7 +60,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarCreateComSucesso() throws RegraDeNegocioException {
+    public void deveTestarCreateComSucesso() throws EntidadeNaoEncontradaException {
         ReembolsoCreateDTO reembolsoCreateDTO = getReembolsoCreateDTO();
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoSavedEntity = getReembolsoEntity();
@@ -67,7 +69,6 @@ public class ReembolsoServiceTest {
         when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
         when(usuarioRepository.save(any(UsuarioEntity.class))).thenReturn(usuarioEntity);
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoSavedEntity);
-        doNothing().when(emailService).sendEmail(any(ReembolsoEntity.class), anyString());
         when(usuarioService.listGestores()).thenReturn(gestores);
         ReembolsoDTO reembolsoSavedDTO = reembolsoService.save(reembolsoCreateDTO);
 
@@ -76,7 +77,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateGestorAprovarComSucesso() throws RegraDeNegocioException {
+    public void deveTestarUpdateGestorAprovarComSucesso() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -92,7 +93,7 @@ public class ReembolsoServiceTest {
         assertEquals(500L, reembolsoAprovadoDTO.getValor().longValue());
     }
     @Test
-    public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws RegraDeNegocioException {
+    public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -111,7 +112,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateGestorReprovarComSucesso() throws RegraDeNegocioException {
+    public void deveTestarUpdateGestorReprovarComSucesso() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -130,7 +131,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateFinanceiroPagarComSucesso() throws RegraDeNegocioException {
+    public void deveTestarUpdateFinanceiroPagarComSucesso() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -149,7 +150,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateFinanceiroReprovarComSucesso() throws RegraDeNegocioException {
+    public void deveTestarUpdateFinanceiroReprovarComSucesso() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -169,11 +170,9 @@ public class ReembolsoServiceTest {
 
     @Test
     public void deveTestarListAllByNomeUsuarioComSucesso() {
-
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
         Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
-        when(reembolsoRepository.findAllByLikeNome(anyString(), any(Pageable.class))).thenReturn(page);
         when(reembolsoRepository.findAllByLikeNomeAndStatus(anyString(), anyInt(), any(Pageable.class))).thenReturn(page);
 
         PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByNomeUsuario("teste", StatusReembolso.ABERTO, 0, 10);
@@ -182,8 +181,19 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarListAllReembolsoByStatusComSucesso() {
+    public void deveTestarListAllByNomeUsuarioComStatusTodosComSucesso() {
+        List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
+        Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
+        when(reembolsoRepository.findAllByLikeNome(anyString(), any(Pageable.class))).thenReturn(page);
+
+        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByNomeUsuario("teste", StatusReembolso.TODOS, 0, 10);
+
+        assertNotNull(reembolsoDTOPageDTO);
+    }
+
+    @Test
+    public void deveTestarListAllReembolsoByStatusComSucesso() {
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
         Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
@@ -207,21 +217,21 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateByLoggedUserComSucesso() throws RegraDeNegocioException {
+    public void deveTestarUpdateByIdReembolsoIUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
 
-        ReembolsoDTO reembolsoUpdatedDTO = reembolsoService.updateByLoggedUser(1, getReembolsoCreateDTO());
+        ReembolsoDTO reembolsoUpdatedDTO = reembolsoService.updateByIdReembolsoIdUsuario(1, usuarioEntity.getIdUsuario(), getReembolsoCreateDTO());
 
         assertNotNull(reembolsoUpdatedDTO);
 
     }
 
     @Test
-    public void deveTestarListAllByLoggedUserAndStatusComSucesso() throws RegraDeNegocioException {
+    public void deveTestarListAllByLoggedUserAndStatusAbertoComSucesso() throws EntidadeNaoEncontradaException {
         Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
         UsuarioEntity usuarioEntity = getUsuarioEntity();
 
@@ -234,7 +244,20 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarListByIdComSucesso() throws RegraDeNegocioException {
+    public void deveTestarListAllByLoggedUserAndStatusTodosComSucesso() throws EntidadeNaoEncontradaException {
+        Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+
+        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataEntradaAsc(any(UsuarioEntity.class), any(Pageable.class))).thenReturn(page);
+
+        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByLoggedUserAndStatus(StatusReembolso.TODOS, 0, 10);
+
+        assertNotNull(reembolsoDTOPageDTO);
+    }
+
+    @Test
+    public void deveTestarListByIdComSucesso() throws EntidadeNaoEncontradaException {
         Integer idReembolso = 1;
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
 
@@ -246,21 +269,17 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarDeleteByLoggedUserComSucesso() throws RegraDeNegocioException {
-        Integer idReembolso = 1;
+    public void deveTestarDeleteByIdReembolsoIdUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
         UsuarioEntity usuarioEntity = getUsuarioEntity();
 
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
-        when(reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataEntradaAsc(any(UsuarioEntity.class), any(Pageable.class))).thenReturn(page);
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         doNothing().when(reembolsoRepository).delete(any(ReembolsoEntity.class));
 
-        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.deleteByLoggedUser(idReembolso, 0, 10);
+        reembolsoService.deleteByIdReembolsoIdUsuario(reembolsoEntity.getIdReembolso(), usuarioEntity.getIdUsuario());
 
         verify(reembolsoRepository, times(1)).delete(any(ReembolsoEntity.class));
-        assertNotNull(reembolsoDTOPageDTO);
     }
 
     @Test
@@ -275,8 +294,6 @@ public class ReembolsoServiceTest {
         assertNotNull(byIdAndUsuarioEntity);
     }
 
-
-    //    =================== AUXILIARES =========================
     private static UsuarioEntity getUsuarioEntity() {
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setIdUsuario(1);

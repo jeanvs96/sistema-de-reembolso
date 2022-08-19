@@ -6,19 +6,21 @@ import lombok.Data;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 public class UsuarioCreateDTO {
     @Schema(example = "Seu Nome Completo")
-    @NotBlank
+    @NotBlank(message = "Insira o nome do usuário")
     private String nome;
 
     @Schema(example = "seuemail@dbccompany.com.br")
-    @NotNull
-    @Email
+    @NotNull(message = "Insira um email")
+    @Email(message = "Insira um email válido")
     private String email;
 
     @Schema(example = "Sua@Senha!23")
-    @NotBlank
+    @NotBlank(message = "Insira uma senha válida")
+    @Size(min = 8)
     private String senha;
 }
