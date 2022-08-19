@@ -170,7 +170,6 @@ public class ReembolsoServiceTest {
 
     @Test
     public void deveTestarListAllByNomeUsuarioComSucesso() {
-
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
         Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
@@ -183,7 +182,6 @@ public class ReembolsoServiceTest {
 
     @Test
     public void deveTestarListAllByNomeUsuarioComStatusTodosComSucesso() {
-
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
         Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
@@ -196,7 +194,6 @@ public class ReembolsoServiceTest {
 
     @Test
     public void deveTestarListAllReembolsoByStatusComSucesso() {
-
         List<ReembolsoEntity> reembolsosEntities = List.of(getReembolsoEntity());
         Page<ReembolsoEntity> page = new PageImpl<>(reembolsosEntities);
 
@@ -234,7 +231,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarListAllByLoggedUserAndStatusComSucesso() throws EntidadeNaoEncontradaException {
+    public void deveTestarListAllByLoggedUserAndStatusAbertoComSucesso() throws EntidadeNaoEncontradaException {
         Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
         UsuarioEntity usuarioEntity = getUsuarioEntity();
 
@@ -242,6 +239,19 @@ public class ReembolsoServiceTest {
         when(reembolsoRepository.findAllByUsuarioEntityAndStatusOrderByDataEntradaAsc(any(UsuarioEntity.class), anyInt(), any(Pageable.class))).thenReturn(page);
 
         PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByLoggedUserAndStatus(StatusReembolso.ABERTO, 0, 10);
+
+        assertNotNull(reembolsoDTOPageDTO);
+    }
+
+    @Test
+    public void deveTestarListAllByLoggedUserAndStatusTodosComSucesso() throws EntidadeNaoEncontradaException {
+        Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+
+        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataEntradaAsc(any(UsuarioEntity.class), any(Pageable.class))).thenReturn(page);
+
+        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.listAllByLoggedUserAndStatus(StatusReembolso.TODOS, 0, 10);
 
         assertNotNull(reembolsoDTOPageDTO);
     }
@@ -284,8 +294,6 @@ public class ReembolsoServiceTest {
         assertNotNull(byIdAndUsuarioEntity);
     }
 
-
-    //    =================== AUXILIARES =========================
     private static UsuarioEntity getUsuarioEntity() {
         UsuarioEntity usuarioEntity = new UsuarioEntity();
         usuarioEntity.setIdUsuario(1);

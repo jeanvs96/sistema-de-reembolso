@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.config.MultipartFileDataReader;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
@@ -26,13 +27,15 @@ public class ArquivosService {
     private final UsuarioRepository usuarioRepository;
     private final ReembolsoService reembolsoService;
     private final ReembolsoRepository reembolsoRepository;
+    private final MultipartFileDataReader multipartFileDataReader;
 
     public String saveFoto(MultipartFile file) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         try {
+            byte[] data = multipartFileDataReader.readData(file);
             FotosEntity fotosEntity = new FotosEntity();
             fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
             fotosEntity.setTipo(file.getContentType());
-            fotosEntity.setData(file.getBytes());
+            fotosEntity.setData(data);
             UsuarioEntity usuarioEntityLogado = usuarioService.getLoggedUser();
             FotosEntity fotosEntityRecuperada = usuarioEntityLogado.getFotosEntity();
 
@@ -51,12 +54,13 @@ public class ArquivosService {
     }
 
 
-    public String saveAnexo(MultipartFile file, Integer idReembolso) throws IOException, RegraDeNegocioException, EntidadeNaoEncontradaException {
+    public String saveAnexo(MultipartFile file, Integer idReembolso) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         try {
+            byte[] data = multipartFileDataReader.readData(file);
             AnexosEntity anexosEntity = new AnexosEntity();
             anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
             anexosEntity.setTipo(file.getContentType());
-            anexosEntity.setData(file.getBytes());
+            anexosEntity.setData(data);
             UsuarioEntity usuarioEntityRecuperado = usuarioService.getLoggedUser();
             ReembolsoEntity reembolsoEntityRecuperado = reembolsoService.findByIdAndUsuarioEntity(idReembolso, usuarioEntityRecuperado);
             AnexosEntity anexosEntityRecuperado = reembolsoEntityRecuperado.getAnexosEntity();
