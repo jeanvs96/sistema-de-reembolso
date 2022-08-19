@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.GestorDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ReembolsoService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/gestor")
 @RequiredArgsConstructor
 @Validated
-public class GestorController {
+public class GestorController implements GestorDocumentation {
     private final ReembolsoService reembolsoService;
 
     @PutMapping("/aprovar/{idReembolso}")
