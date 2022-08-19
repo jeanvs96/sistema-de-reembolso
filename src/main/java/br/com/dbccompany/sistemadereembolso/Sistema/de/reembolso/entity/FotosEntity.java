@@ -5,8 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
 
-@Entity
-@Table(name = "fotos")
+@Entity(name = "fotos")
 @Getter
 @Setter
 @RequiredArgsConstructor

@@ -13,7 +13,6 @@ import java.util.List;
 @Setter
 @RequiredArgsConstructor
 public class RolesEntity implements GrantedAuthority {
-
     @Id
     @SequenceGenerator(name = "roles_seq", sequenceName = "seq_roles", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "roles_seq")

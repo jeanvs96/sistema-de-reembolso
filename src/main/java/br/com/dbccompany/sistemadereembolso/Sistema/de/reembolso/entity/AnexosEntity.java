@@ -3,11 +3,9 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-
 import javax.persistence.*;
 
-@Entity
-@Table(name = "anexos")
+@Entity(name = "anexos")
 @Getter
 @Setter
 @RequiredArgsConstructor
