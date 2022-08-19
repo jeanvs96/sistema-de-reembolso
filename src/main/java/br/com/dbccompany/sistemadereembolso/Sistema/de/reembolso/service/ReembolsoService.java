@@ -127,6 +127,11 @@ public class ReembolsoService {
         reembolsoEntity.setDataEntrada(reembolsoEntityRecuperado.getDataEntrada());
         reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
+        if (!(reembolsoCreateDTO.getValor().equals(reembolsoEntityRecuperado.getValor()))){
+            usuarioEntity.setValorTotal((usuarioEntity.getValorTotal() - reembolsoEntityRecuperado.getValor()) + reembolsoCreateDTO.getValor());
+            usuarioRepository.save(usuarioEntity);
+        }
+
         ReembolsoEntity reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
 
         log.info("Solicitacao de reembolso atualizado");
@@ -135,9 +140,13 @@ public class ReembolsoService {
     }
 
     public void deleteByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
-        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.findById(idUsuario));
+        UsuarioEntity usuarioEntity = usuarioService.findById(idUsuario);
+        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
+        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal() - reembolsoEntity.getValor());
 
         reembolsoRepository.delete(reembolsoEntity);
+
+        usuarioRepository.save(usuarioEntity);
 
         log.info("Reembolso deletado com sucesso.");
     }

@@ -28,10 +28,27 @@ public class SecurityConfiguration {
                 .cors().and()
                 .csrf().disable()
                 .authorizeHttpRequests((auth) ->
-                        auth.antMatchers("/usuario/logged", "/reembolso/create", "/**")       // TODO - remover a autorização geral usada para fins de implementação
+                        auth.antMatchers("/usuario/logged", "/upload/foto")
                                 .permitAll()
-                                .antMatchers("/usuario/role").hasRole("ADMIN")
-                                .antMatchers("/usuario/ativar-desativar-usuario/{idUsuario}").hasRole("ADMIN")
+                                .antMatchers("/reembolso/update/{idReembolso}/usuario/{idUsuario}").hasAnyRole("ADMIN", "COLABORADOR")
+                                .antMatchers("/reembolso/create").hasAnyRole("ADMIN", "COLABORADOR")
+                                .antMatchers("/reembolso/logged/list/status").hasRole("COLABORADOR")
+                                .antMatchers("/reembolso/list/status").hasAnyRole("ADMIN", "GESTOR", "FINANCEIRO")
+                                .antMatchers("/reembolso/list/nome/status").hasAnyRole("ADMIN", "GESTOR", "FINANCEIRO")
+                                .antMatchers("/reembolso/delete/{idReembolso}/usuario/{idUsuario}").hasAnyRole("ADMIN", "COLABORADOR")
+
+                                .antMatchers("/gestor/aprovar/{idReembolso}").hasAnyRole("ADMIN", "GESTOR")
+
+                                .antMatchers("/financeiro/pagar/{idReembolso}").hasAnyRole("ADMIN", "FINANCEIRO")
+
+                                .antMatchers("/usuario/listar").hasRole("ADMIN")
+                                .antMatchers("/usuario/listar/nome").hasRole("ADMIN")
+                                .antMatchers("/usuario/delete/{idUsuario}").hasRole("ADMIN")
+
+                                .antMatchers("/upload/anexo").hasAnyRole("ADMIN", "COLABORADOR")
+
+                                .antMatchers("/admin/cadastro").hasRole("ADMIN")
+                                .antMatchers("/admin/atribuir/role").hasRole("ADMIN")
                                 .anyRequest()
                                 .authenticated());
 
