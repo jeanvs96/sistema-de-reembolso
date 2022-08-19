@@ -39,7 +39,7 @@ public class ReembolsoEntity {
     private UsuarioEntity usuarioEntity;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_anexos", referencedColumnName = "id_anexos")
     private AnexosEntity anexosEntity;
 }
