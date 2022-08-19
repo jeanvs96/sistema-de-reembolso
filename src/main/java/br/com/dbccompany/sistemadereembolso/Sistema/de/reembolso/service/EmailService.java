@@ -39,20 +39,7 @@ public class EmailService {
 
             if (reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
                 mimeMessageHelper.setSubject("Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
-            }
-//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.APROVADO_GESTOR.ordinal())) {
-//                mimeMessageHelper.setSubject("Olá Financeiro! Você tem uma nova solicitação aguardando sua avaliação.");
-//            }
-//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_GESTOR.ordinal())) {
-//                mimeMessageHelper.setSubject("Solicitação reprovada.");
-//            }
-//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.REPROVADO_FINANCEIRO.ordinal())) {
-//                mimeMessageHelper.setSubject("Solicitação reprovada.");
-//            }
-//            else if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
-//                mimeMessageHelper.setSubject("Fechado e encaminhado para pagamento.");
-//            }
-            else {
+            } else {
                 throw new RegraDeNegocioException("Falha no envio de e-mail");
             }
             mimeMessageHelper.setText(getContentFromTemplate(reembolsoEntity), true);
@@ -66,7 +53,7 @@ public class EmailService {
         Map<String, Object> dados = new HashMap<>();
 
         Template template;
-        dados.put("intro", "Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
+//        dados.put("intro", "Olá Gestor! Você tem uma nova solicitação aguardando sua avaliação.");
         dados.put("mensagem", "Título: " + reembolsoEntity.getTitulo() +
                 "\nValor = " + reembolsoEntity.getValor());
         dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
