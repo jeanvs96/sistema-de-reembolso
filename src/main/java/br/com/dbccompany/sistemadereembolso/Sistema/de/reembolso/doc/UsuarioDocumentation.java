@@ -1,9 +1,7 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginComSucessoDTO;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +22,7 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Autenticar usuário.", description = "Valida através da geração de um token a existência do par login/senha cadastrado no banco de dados.")
-    public ResponseEntity<UsuarioLoginComSucessoDTO> login(@RequestBody @Valid UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException;
+    ResponseEntity<UsuarioLoginComSucessoDTO> login(@RequestBody @Valid UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException;
 
     @PostMapping("/cadastro")
     @ApiResponses(
@@ -35,7 +33,18 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Cadastrar usuário.", description = "Cadastra um usuário no banco de dados, com uma ou mais roles(ADMIN, GESTOR, FINANCEIRO, COLABORADOR).")
-    public ResponseEntity<UsuarioLoginComSucessoDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
+    ResponseEntity<UsuarioLoginComSucessoDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO) throws RegraDeNegocioException;
+
+    @DeleteMapping("/delete/{idUsuario}")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Usuário deletado com sucesso com sucesso."),
+                    @ApiResponse(responseCode = "404", description = "Recurso não encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro ao criar cadastro.")
+            }
+    )
+    @Operation(summary = "Deletar usuário.", description = "Endpoint destinado à testes automatizados, pode ser acessado somente pela ROLE_ADMIN")
+    void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws EntidadeNaoEncontradaException;
 
     @GetMapping("/logged")
     @ApiResponses(
@@ -46,5 +55,27 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Recuperar usuario logado.", description = "Recupera do banco o usuario logado.")
-    public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException, EntidadeNaoEncontradaException;
+    ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException, EntidadeNaoEncontradaException;
+
+    @GetMapping("/listar/nome")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
+                    @ApiResponse(responseCode = "404", description = "O usuário não foi encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro ao buscar entidade logada.")
+            }
+    )
+    @Operation(summary = "Recuperar lista de usuários.", description = "Recupera do banco todos os usuários que atendam o filtro por nome, ou parte dele.")
+    public PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros);
+
+    @GetMapping("/listar")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(responseCode = "200", description = "Retorna uma lista de usuários"),
+                    @ApiResponse(responseCode = "404", description = "O usuário não foi encontrado."),
+                    @ApiResponse(responseCode = "500", description = "Erro ao buscar entidade logada.")
+            }
+    )
+    @Operation(summary = "Recuperar lista de usuários.", description = "Recupera do banco todos os usuários.")
+    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros);
 }

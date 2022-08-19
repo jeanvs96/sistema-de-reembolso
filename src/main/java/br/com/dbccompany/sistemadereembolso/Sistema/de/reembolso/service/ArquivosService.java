@@ -54,14 +54,14 @@ public class ArquivosService {
     }
 
 
-    public String saveAnexo(MultipartFile file, Integer idReembolso) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
+    public String saveAnexo(MultipartFile file, Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         try {
             byte[] data = multipartFileDataReader.readData(file);
             AnexosEntity anexosEntity = new AnexosEntity();
             anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
             anexosEntity.setTipo(file.getContentType());
             anexosEntity.setData(data);
-            UsuarioEntity usuarioEntityRecuperado = usuarioService.getLoggedUser();
+            UsuarioEntity usuarioEntityRecuperado = usuarioService.findById(idUsuario);
             ReembolsoEntity reembolsoEntityRecuperado = reembolsoService.findByIdAndUsuarioEntity(idReembolso, usuarioEntityRecuperado);
             AnexosEntity anexosEntityRecuperado = reembolsoEntityRecuperado.getAnexosEntity();
 

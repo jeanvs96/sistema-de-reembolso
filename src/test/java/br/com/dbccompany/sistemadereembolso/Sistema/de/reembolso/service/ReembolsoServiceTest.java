@@ -220,6 +220,7 @@ public class ReembolsoServiceTest {
     public void deveTestarUpdateByIdReembolsoIUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setValor(400.0);
         when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
@@ -312,13 +313,6 @@ public class ReembolsoServiceTest {
         reembolsoEntity.setValor(500.0);
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
         return reembolsoEntity;
-    }
-
-    private static ReembolsoDTO getReembolsoDTO() {
-        ReembolsoDTO reembolsoDTO = new ReembolsoDTO();
-        reembolsoDTO.setIdReembolso(1);
-        reembolsoDTO.setTitulo("Aluguel carro");
-        return reembolsoDTO;
     }
 
     private static ReembolsoCreateDTO getReembolsoCreateDTO() {

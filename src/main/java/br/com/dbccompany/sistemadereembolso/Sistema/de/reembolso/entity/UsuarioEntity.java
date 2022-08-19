@@ -36,7 +36,7 @@ public class UsuarioEntity implements UserDetails {
     private Boolean status;
 
     @JsonIgnore
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "id_fotos", referencedColumnName = "id_fotos")
     private FotosEntity fotosEntity;
 
