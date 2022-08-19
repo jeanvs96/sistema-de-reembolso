@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.ReembolsoDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
@@ -18,7 +19,7 @@ import javax.validation.Valid;
 @RequestMapping("/reembolso")
 @RequiredArgsConstructor
 @Validated
-public class ReembolsoController {
+public class ReembolsoController  implements ReembolsoDocumentation {
     private final ReembolsoService reembolsoService;
 
     @PostMapping("/create")

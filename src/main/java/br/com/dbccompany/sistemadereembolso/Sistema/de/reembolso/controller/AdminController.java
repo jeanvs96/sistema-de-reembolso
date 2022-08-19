@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.AdminDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
@@ -17,7 +18,7 @@ import javax.validation.Valid;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @Validated
-public class AdminController {
+public class AdminController implements AdminDocumentation {
     private final UsuarioService usuarioService;
 
     @PostMapping("/cadastro")
