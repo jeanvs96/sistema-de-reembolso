@@ -27,7 +27,7 @@ public class ArquivosService {
     private final ReembolsoService reembolsoService;
     private final ReembolsoRepository reembolsoRepository;
 
-    public String saveFoto(MultipartFile file) throws EntidadeNaoEncontradaException, IOException {
+    public String saveFoto(MultipartFile file) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         try {
             FotosEntity fotosEntity = new FotosEntity();
             fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
@@ -45,7 +45,7 @@ public class ArquivosService {
             usuarioEntityLogado.setFotosEntity(arquivoEntitySalvo);
             usuarioRepository.save(usuarioEntityLogado);
         } catch (IOException e) {
-            throw new IOException("Falha ao fazer upload do arquivo");
+            throw new RegraDeNegocioException("Falha ao fazer upload do arquivo");
         }
         return "Foto salva com sucesso";
     }

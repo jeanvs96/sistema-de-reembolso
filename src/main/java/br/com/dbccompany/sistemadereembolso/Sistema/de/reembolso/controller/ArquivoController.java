@@ -19,7 +19,7 @@ public class ArquivoController {
     private final ArquivosService arquivosService;
 
     @PostMapping(value = "/foto", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadFoto(@RequestPart("file") MultipartFile file) throws EntidadeNaoEncontradaException, IOException {
+    public ResponseEntity<String> uploadFoto(@RequestPart("file") MultipartFile file) throws EntidadeNaoEncontradaException, IOException, RegraDeNegocioException {
         return new ResponseEntity<>(arquivosService.saveFoto(file), HttpStatus.OK);
     }
 

@@ -117,8 +117,8 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
-        UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
+    public ReembolsoDTO updateByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
+        UsuarioEntity usuarioEntity = usuarioService.findById(idUsuario);
         ReembolsoEntity reembolsoEntityRecuperado = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
 
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
@@ -134,14 +134,12 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
-        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.getLoggedUser());
+    public void deleteByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
+        ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.findById(idUsuario));
 
         reembolsoRepository.delete(reembolsoEntity);
 
         log.info("Reembolso deletado com sucesso.");
-
-        return listAllByLoggedUserAndStatus(StatusReembolso.TODOS, pagina, quantidadeDeRegistros);
     }
 
     public PageDTO<ReembolsoDTO> listAllReembolsosByStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {

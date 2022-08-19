@@ -28,6 +28,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -219,14 +220,14 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateByLoggedUserComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
+    public void deveTestarUpdateByIdReembolsoIUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
 
-        ReembolsoDTO reembolsoUpdatedDTO = reembolsoService.updateByLoggedUser(1, getReembolsoCreateDTO());
+        ReembolsoDTO reembolsoUpdatedDTO = reembolsoService.updateByIdReembolsoIdUsuario(1, usuarioEntity.getIdUsuario(), getReembolsoCreateDTO());
 
         assertNotNull(reembolsoUpdatedDTO);
 
@@ -258,21 +259,17 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarDeleteByLoggedUserComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
-        Integer idReembolso = 1;
+    public void deveTestarDeleteByIdReembolsoIdUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
         UsuarioEntity usuarioEntity = getUsuarioEntity();
 
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
-        when(reembolsoRepository.findAllByUsuarioEntityOrderByStatusAscDataEntradaAsc(any(UsuarioEntity.class), any(Pageable.class))).thenReturn(page);
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         doNothing().when(reembolsoRepository).delete(any(ReembolsoEntity.class));
 
-        PageDTO<ReembolsoDTO> reembolsoDTOPageDTO = reembolsoService.deleteByLoggedUser(idReembolso, 0, 10);
+        reembolsoService.deleteByIdReembolsoIdUsuario(reembolsoEntity.getIdReembolso(), usuarioEntity.getIdUsuario());
 
         verify(reembolsoRepository, times(1)).delete(any(ReembolsoEntity.class));
-        assertNotNull(reembolsoDTOPageDTO);
     }
 
     @Test
