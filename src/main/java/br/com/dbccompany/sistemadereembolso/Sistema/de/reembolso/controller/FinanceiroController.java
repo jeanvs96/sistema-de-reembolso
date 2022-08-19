@@ -1,5 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.FinanceiroDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ReembolsoService;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/financeiro")
 @RequiredArgsConstructor
 @Validated
-public class FinanceiroController {
+public class FinanceiroController implements FinanceiroDocumentation {
     private final ReembolsoService reembolsoService;
 
     @PutMapping("/pagar/{idReembolso}")
