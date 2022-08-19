@@ -8,6 +8,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.Usu
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.ReembolsoRepository;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
@@ -33,7 +34,7 @@ public class ReembolsoService {
     private final EmailService emailService;
     private final ObjectMapper objectMapper;
 
-    public ReembolsoDTO save(ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
+    public ReembolsoDTO save(ReembolsoCreateDTO reembolsoCreateDTO) throws EntidadeNaoEncontradaException {
         UsuarioEntity usuarioLogadoEntity = usuarioService.getLoggedUser();
 
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
@@ -46,7 +47,6 @@ public class ReembolsoService {
         usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() + reembolsoSavedEntity.getValor());
         usuarioRepository.save(usuarioLogadoEntity);
 
-        // enviar para todos os GESTORES
         List<UsuarioComposeDTO> gestores = usuarioService.listGestores();
 
         for (UsuarioComposeDTO gestor : gestores) {
@@ -60,7 +60,7 @@ public class ReembolsoService {
         return reembolsoDTO;
     }
 
-    public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws RegraDeNegocioException {
+    public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoAtualizado;
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
         UsuarioEntity usuarioLogadoEntity = reembolsoEntity.getUsuarioEntity();
@@ -91,7 +91,7 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws RegraDeNegocioException {
+    public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
         UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
         ReembolsoEntity reembolsoAtualizado;
@@ -117,7 +117,7 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException {
+    public ReembolsoDTO updateByLoggedUser(Integer idReembolso, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = usuarioService.getLoggedUser();
         ReembolsoEntity reembolsoEntityRecuperado = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
 
@@ -134,7 +134,7 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+    public PageDTO<ReembolsoDTO> deleteByLoggedUser(Integer idReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioService.getLoggedUser());
 
         reembolsoRepository.delete(reembolsoEntity);
@@ -183,7 +183,7 @@ public class ReembolsoService {
         return new PageDTO<>(reembolsoEntityPage.getTotalElements(), reembolsoEntityPage.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOList);
     }
 
-    public PageDTO<ReembolsoDTO> listAllByLoggedUserAndStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws RegraDeNegocioException {
+    public PageDTO<ReembolsoDTO> listAllByLoggedUserAndStatus(StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws EntidadeNaoEncontradaException {
         Page<ReembolsoEntity> reembolsosEntities;
         Pageable pageable = PageRequest.of(pagina, quantidadeDeRegistros);
         UsuarioEntity loggedUser = usuarioService.getLoggedUser();
@@ -202,7 +202,7 @@ public class ReembolsoService {
         return new PageDTO<>(reembolsosEntities.getTotalElements(), reembolsosEntities.getTotalPages(), pagina, quantidadeDeRegistros, reembolsoDTOS);
     }
 
-    public ReembolsoDTO listById(Integer idReembolso) throws RegraDeNegocioException {
+    public ReembolsoDTO listById(Integer idReembolso) throws EntidadeNaoEncontradaException {
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
 
         return entityToDTO(reembolsoEntity);
@@ -214,8 +214,8 @@ public class ReembolsoService {
         return reembolsoRepository.findByIdReembolsoAndUsuarioEntity(idReembolso, usuarioEntity).orElseThrow(() -> new RegraDeNegocioException("Reembolso não encontrado"));
     }
 
-    private ReembolsoEntity findById(Integer idReembolso) throws RegraDeNegocioException {
-        return reembolsoRepository.findById(idReembolso).orElseThrow(() -> new RegraDeNegocioException("Reembolso não encontrado"));
+    private ReembolsoEntity findById(Integer idReembolso) throws EntidadeNaoEncontradaException {
+        return reembolsoRepository.findById(idReembolso).orElseThrow(() -> new EntidadeNaoEncontradaException("Reembolso não encontrado"));
     }
 
     private ReembolsoEntity createToEntity(ReembolsoCreateDTO reembolsoCreateDTO) {

@@ -1,11 +1,8 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.EmailDto;
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.StatusReembolso;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;

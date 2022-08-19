@@ -3,6 +3,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.UsuarioDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.paginacao.PageDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.*;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.LoginService;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
@@ -32,12 +33,12 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @DeleteMapping("/delete/{idUsuario}")
-    public void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException {
+    public void deletarUsuario(@PathVariable("idUsuario") Integer idUsuario) throws EntidadeNaoEncontradaException {
         usuarioService.deleteUsuario(idUsuario);
     }
 
     @GetMapping("/logged")
-    public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws RegraDeNegocioException {
+    public ResponseEntity<UsuarioDTO> getUsuarioLogado() throws EntidadeNaoEncontradaException {
         return new ResponseEntity<>(usuarioService.listUsuarioLogged(), HttpStatus.OK);
     }
 

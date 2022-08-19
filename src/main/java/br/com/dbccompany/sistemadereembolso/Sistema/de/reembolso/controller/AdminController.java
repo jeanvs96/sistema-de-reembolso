@@ -3,6 +3,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioCreateDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoRoles;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.UsuarioService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class AdminController {
     }
 
     @PostMapping("/atribuir/role")
-    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException {
+    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         return new ResponseEntity<>(usuarioService.atribuirRole(idUsuario, role), HttpStatus.OK);
     }
 }
