@@ -5,12 +5,12 @@ import lombok.Data;
 
 @Data
 public class UsuarioUpdateDTO {
-    @Schema(example = "Seu Nome Completo")
+    @Schema(description = "Nome do usuário.", example = "Seu Nome Completo")
     private String nome;
 
-    @Schema(example = "seuemail@dbccompany.com.br")
+    @Schema(description = "Email do usuário.", example = "seuemail@dbccompany.com.br")
     private String email;
 
-    @Schema(example = "Su@Senha!23")
+    @Schema(description = "Senha do usuário", example = "Su@Senha!23")
     private String senha;
 }

@@ -5,15 +5,15 @@ import lombok.Data;
 
 @Data
 public class FotoDTO {
-    @Schema(name = "ID único da foto.")
+    @Schema(description = "ID único da foto.")
     private Integer idFotos;
 
-    @Schema(name = "Nome do arquivo.")
+    @Schema(description = "Nome do arquivo.")
     private String nome;
 
-    @Schema(name = "Tipo do arquivo")
+    @Schema(description = "Tipo do arquivo")
     private String tipo;
 
-    @Schema(name = "Dados (em byte array) do arquivo")
+    @Schema(description = "Dados (em byte array) do arquivo")
     private byte[] data;
 }

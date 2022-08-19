@@ -7,11 +7,11 @@ import javax.validation.constraints.NotNull;
 
 @Data
 public class ReembolsoCreateDTO {
-    @Schema(example = "0.0")
+    @Schema(description = "Valor do reembolso",example = "0.0")
     @NotNull(message = "Insira o valor do reembolso")
     private Double valor;
 
-    @Schema(example = "Transporte para reunião com cliente")
+    @Schema(description = "Título com a descrição do reembolso", example = "Transporte para reunião com cliente")
     @NotBlank(message = "Insira uma descrição paro o reembolso")
     private String titulo;
 

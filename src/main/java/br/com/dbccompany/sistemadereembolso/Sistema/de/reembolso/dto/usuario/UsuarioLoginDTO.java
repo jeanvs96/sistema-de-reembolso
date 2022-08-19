@@ -8,12 +8,12 @@ import javax.validation.constraints.NotNull;
 @Data
 public class UsuarioLoginDTO {
 
-    @Schema(example = "seuemail@dbccompany.com.br")
+    @Schema(description = "Email do usuário.", example = "seuemail@dbccompany.com.br")
     @NotNull
     @Email
     private String email;
 
-    @Schema(example = "123")
+    @Schema(description = "Senha do usuário", example = "123")
     @NotNull
     private String senha;
 }

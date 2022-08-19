@@ -10,17 +10,17 @@ import javax.validation.constraints.Size;
 
 @Data
 public class UsuarioCreateDTO {
-    @Schema(example = "Seu Nome Completo")
+    @Schema(description = "Nome do usuário.", example = "Seu Nome Completo")
     @NotBlank(message = "Insira o nome do usuário")
     private String nome;
 
-    @Schema(example = "seuemail@dbccompany.com.br")
+    @Schema(description = "Email do usuário.", example = "seuemail@dbccompany.com.br")
     @NotNull(message = "Insira um email")
     @Email(message = "Insira um email válido")
     private String email;
 
-    @Schema(example = "Sua@Senha!23")
+    @Schema(description = "Senha do usuário", example = "Sua@Senha!23")
     @NotBlank(message = "Insira uma senha válida")
-    @Size(min = 8)
+    @Size(min = 8, max = 20)
     private String senha;
 }
