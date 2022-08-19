@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/upload")
@@ -23,7 +22,7 @@ public class ArquivoController {
         return new ResponseEntity<>(arquivosService.saveFoto(file), HttpStatus.OK);
     }
 
-    @PostMapping(value = "/anexo", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/anexo/reembolso/usuario", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadAnexo(@RequestPart("file") MultipartFile file, Integer idReembolso, Integer idUsuario) throws  RegraDeNegocioException, EntidadeNaoEncontradaException {
         return new ResponseEntity<>(arquivosService.saveAnexo(file, idReembolso, idUsuario), HttpStatus.OK);
     }
