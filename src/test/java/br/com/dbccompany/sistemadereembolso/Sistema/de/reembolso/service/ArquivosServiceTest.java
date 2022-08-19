@@ -80,7 +80,7 @@ public class ArquivosServiceTest {
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
 
         UsuarioEntity usuarioEntity = getUsuarioEntity();
-        when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
 
         ReembolsoEntity reembolsoEntity = new ReembolsoEntity();
         reembolsoEntity.setIdReembolso(1);
@@ -97,7 +97,7 @@ public class ArquivosServiceTest {
         when(anexosRepository.save(any(AnexosEntity.class))).thenReturn(anexosEntity);
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
 
-        String stringSucesso = arquivosService.saveAnexo(file, 1);
+        String stringSucesso = arquivosService.saveAnexo(file, 1, 1);
 
         assertNotNull(stringSucesso);
     }
@@ -108,7 +108,7 @@ public class ArquivosServiceTest {
 
         when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
 
-        arquivosService.saveAnexo(file, 1);
+        arquivosService.saveAnexo(file, 1, 1);
     }
 
     private static UsuarioEntity getUsuarioEntity() {
