@@ -1,6 +1,6 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.config.MultipartFileDataReader;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.component.MultipartFileDataReader;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
@@ -46,7 +46,7 @@ public class ArquivosServiceTest {
     @Test
     public void deveTestarSaveFotoComSucesso() throws EntidadeNaoEncontradaException, IOException, RegraDeNegocioException {
 
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
 
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         when(usuarioService.getLoggedUser()).thenReturn(usuarioEntity);
@@ -67,15 +67,22 @@ public class ArquivosServiceTest {
 
     @Test(expected = RegraDeNegocioException.class)
     public void deveTestarSaveFoto() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "image/png", "bar".getBytes());
         when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
+
+        arquivosService.saveFoto(file);
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarSaveFotoErroAoVerificarTipoDeFoto() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
 
         arquivosService.saveFoto(file);
     }
 
     @Test
     public void deveTestarSaveAnexoComSucesso() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "application/pdf", "bar".getBytes());
 
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
@@ -102,11 +109,18 @@ public class ArquivosServiceTest {
 
     @Test(expected = RegraDeNegocioException.class)
     public void deveTestarSaveAnexo() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
-        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+        MockMultipartFile file = new MockMultipartFile("file", "orig", "application/pdf", "bar".getBytes());
 
         when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
 
         arquivosService.saveAnexo(file, 1, 1);
+    }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarSaveAnexoErroAoVerificarTipoDeAnexo() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
+        MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
+
+        arquivosService.saveAnexo(file, anyInt(), anyInt());
     }
 
     private static UsuarioEntity getUsuarioEntity() {
