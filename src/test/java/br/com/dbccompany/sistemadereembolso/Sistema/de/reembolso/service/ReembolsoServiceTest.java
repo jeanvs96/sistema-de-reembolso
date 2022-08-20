@@ -91,6 +91,19 @@ public class ReembolsoServiceTest {
         assertEquals(StatusReembolso.APROVADO_GESTOR.getTipo(), reembolsoAprovadoDTO.getStatusDoReembolso());
         assertEquals(500L, reembolsoAprovadoDTO.getValor().longValue());
     }
+
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarUpdateGestorAprovar() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
+        Integer idReembolso = 1;
+        Boolean aprovado = true;
+        ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setStatus(2);
+
+        when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
+
+        reembolsoService.updateGestorAprovar(idReembolso, aprovado);
+    }
+
     @Test
     public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
@@ -230,6 +243,21 @@ public class ReembolsoServiceTest {
 
     }
 
+    @Test(expected = RegraDeNegocioException.class)
+    public void deveTestarUpdateByIdReembolsoIUsuario() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
+        UsuarioEntity usuarioEntity = getUsuarioEntity();
+        ReembolsoEntity reembolsoEntity = getReembolsoEntity();
+        reembolsoEntity.setStatus(StatusReembolso.REPROVADO_GESTOR.ordinal());
+
+        when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
+        when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
+
+        ReembolsoDTO reembolsoUpdatedDTO = reembolsoService.updateByIdReembolsoIdUsuario(1, usuarioEntity.getIdUsuario(), getReembolsoCreateDTO());
+
+        assertNotNull(reembolsoUpdatedDTO);
+
+    }
+
     @Test
     public void deveTestarListAllByLoggedUserAndStatusAbertoComSucesso() throws EntidadeNaoEncontradaException {
         Page<ReembolsoEntity> page = new PageImpl<>(List.of(getReembolsoEntity()));
@@ -328,5 +356,4 @@ public class ReembolsoServiceTest {
         usuarioComposeDTO.setNome("Testador");
         return usuarioComposeDTO;
     }
-
 }
