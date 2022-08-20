@@ -50,7 +50,7 @@ public class ReembolsoService {
 
         for (UsuarioComposeDTO gestor : gestores) {
             log.info(gestor.getEmail());
-//            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
+            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
         }
 
         ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoSavedEntity);
