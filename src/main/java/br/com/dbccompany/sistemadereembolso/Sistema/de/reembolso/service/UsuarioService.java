@@ -22,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -47,7 +48,7 @@ public class UsuarioService {
 
         usuarioEntity.setStatus(true);
         usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(TipoRoles.COLABORADOR.getTipo())));
-        usuarioEntity.setValorTotal(0.0);
+        usuarioEntity.setValorTotal(new BigDecimal(0));
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 
@@ -69,7 +70,7 @@ public class UsuarioService {
 
         usuarioEntity.setStatus(true);
         usuarioEntity.setRolesEntities(Set.of(rolesService.findByRole(role.getTipo())));
-        usuarioEntity.setValorTotal(0.0);
+        usuarioEntity.setValorTotal(new BigDecimal(0));
 
         UsuarioEntity usuarioSalvo = usuarioRepository.save(usuarioEntity);
 

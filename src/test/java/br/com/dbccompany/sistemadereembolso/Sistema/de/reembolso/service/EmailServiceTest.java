@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.mail.internet.MimeMessage;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -53,8 +54,7 @@ public class EmailServiceTest {
     @Test(expected = WantedButNotInvoked.class)
     public void deveTestarSendEmailSemSucesso() throws IOException, TemplateException {
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        reembolsoEntity.setStatus(StatusReembolso.FECHADO_PAGO.ordinal()); // erro acontece quando não é status ABERTO
-
+        reembolsoEntity.setStatus(StatusReembolso.FECHADO_PAGO.ordinal());
 
         String sendTo = "teste@dbccompany.com.br";
         when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
@@ -70,7 +70,7 @@ public class EmailServiceTest {
         ReembolsoEntity reembolsoEntity = new ReembolsoEntity();
         reembolsoEntity.setIdReembolso(1);
         reembolsoEntity.setTitulo("reembolso1");
-        reembolsoEntity.setValor(100.0);
+        reembolsoEntity.setValor(new BigDecimal(100));
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
 
         return reembolsoEntity;

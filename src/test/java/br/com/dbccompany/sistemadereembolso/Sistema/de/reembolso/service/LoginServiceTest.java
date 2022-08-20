@@ -15,6 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.math.BigDecimal;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
@@ -61,7 +62,7 @@ public class LoginServiceTest {
         usuarioEntity.setNome("Jean Silva");
         usuarioEntity.setStatus(true);
         usuarioEntity.setIdUsuario(1);
-        usuarioEntity.setValorTotal(0.0);
+        usuarioEntity.setValorTotal(new BigDecimal(0));
         usuarioEntity.setEmail("jean@dbccompany.com.br");
         usuarioEntity.setSenha("123");
         usuarioEntity.setRolesEntities(Set.of(getRolesEntity()));

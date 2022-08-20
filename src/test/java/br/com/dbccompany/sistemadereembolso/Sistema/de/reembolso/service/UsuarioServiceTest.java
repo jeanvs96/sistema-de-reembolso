@@ -28,6 +28,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -249,7 +251,7 @@ public class UsuarioServiceTest {
         usuarioEntity.setNome("Jean Silva");
         usuarioEntity.setStatus(true);
         usuarioEntity.setIdUsuario(1);
-        usuarioEntity.setValorTotal(0.0);
+        usuarioEntity.setValorTotal(new BigDecimal(0));
         usuarioEntity.setEmail("jean@dbccompany.com.br");
         usuarioEntity.setSenha("123");
 

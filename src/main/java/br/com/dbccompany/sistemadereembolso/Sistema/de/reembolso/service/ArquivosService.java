@@ -1,10 +1,12 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
-import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.config.MultipartFileDataReader;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.component.MultipartFileDataReader;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.AnexosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.FotosEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.ReembolsoEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoArquivoAnexo;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.enums.TipoArquivoFoto;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.AnexosRepository;
@@ -31,11 +33,12 @@ public class ArquivosService {
 
     public String saveFoto(MultipartFile file) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         try {
-            byte[] data = multipartFileDataReader.readData(file);
+            verificarTipoDeFoto(file);
+
             FotosEntity fotosEntity = new FotosEntity();
             fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
             fotosEntity.setTipo(file.getContentType());
-            fotosEntity.setData(data);
+            fotosEntity.setData(multipartFileDataReader.readData(file));
             UsuarioEntity usuarioEntityLogado = usuarioService.getLoggedUser();
             FotosEntity fotosEntityRecuperada = usuarioEntityLogado.getFotosEntity();
 
@@ -56,11 +59,12 @@ public class ArquivosService {
 
     public String saveAnexo(MultipartFile file, Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         try {
-            byte[] data = multipartFileDataReader.readData(file);
+            verificarTipoDeAnexo(file);
+
             AnexosEntity anexosEntity = new AnexosEntity();
             anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
             anexosEntity.setTipo(file.getContentType());
-            anexosEntity.setData(data);
+            anexosEntity.setData(multipartFileDataReader.readData(file));
             UsuarioEntity usuarioEntityRecuperado = usuarioService.findById(idUsuario);
             ReembolsoEntity reembolsoEntityRecuperado = reembolsoService.findByIdAndUsuarioEntity(idReembolso, usuarioEntityRecuperado);
             AnexosEntity anexosEntityRecuperado = reembolsoEntityRecuperado.getAnexosEntity();
@@ -81,6 +85,28 @@ public class ArquivosService {
         return "Arquivo salvo com sucesso";
     }
 
+    private void verificarTipoDeFoto(MultipartFile file) throws RegraDeNegocioException {
+        boolean controle = false;
+        for (TipoArquivoFoto tipoArquivoFoto : TipoArquivoFoto.values()) {
+            if (tipoArquivoFoto.getTipo().equals(file.getContentType())) {
+                controle = true;
+            }
+        }
+        if (!controle) {
+            throw new RegraDeNegocioException("Selecione uma foto PNG/JPG/JPEG");
+        }
+    }
 
+    private void verificarTipoDeAnexo(MultipartFile file) throws RegraDeNegocioException {
+        boolean controle = false;
+        for (TipoArquivoAnexo tipoArquivoAnexo : TipoArquivoAnexo.values()) {
+            if (tipoArquivoAnexo.getTipo().equals(file.getContentType())) {
+                controle = true;
+            }
+        }
+        if (!controle) {
+            throw new RegraDeNegocioException("Selecione um anexo PNG/JPG/JPEG/PDF");
+        }
+    }
 }
 

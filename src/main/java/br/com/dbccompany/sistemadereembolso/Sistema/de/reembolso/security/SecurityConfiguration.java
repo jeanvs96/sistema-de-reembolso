@@ -64,7 +64,8 @@ public class SecurityConfiguration {
                 "/swagger-resources/**",
                 "/swagger-ui/**",
                 "/usuario/login",
-                "/usuario/cadastro");
+                "/usuario/cadastro",
+                "/");
     }
 
     @Bean

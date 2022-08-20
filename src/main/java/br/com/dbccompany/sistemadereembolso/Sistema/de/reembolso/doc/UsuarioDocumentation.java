@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 public interface UsuarioDocumentation {
-
     @PostMapping("/login")
     @ApiResponses(
             value = {
@@ -66,7 +65,7 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Recuperar lista de usuários.", description = "Recupera do banco todos os usuários que atendam o filtro por nome, ou parte dele.")
-    public PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros);
+    PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros);
 
     @GetMapping("/listar")
     @ApiResponses(
@@ -77,5 +76,5 @@ public interface UsuarioDocumentation {
             }
     )
     @Operation(summary = "Recuperar lista de usuários.", description = "Recupera do banco todos os usuários.")
-    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros);
+    PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros);
 }

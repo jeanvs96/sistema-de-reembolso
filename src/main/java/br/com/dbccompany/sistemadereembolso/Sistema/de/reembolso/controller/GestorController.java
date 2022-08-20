@@ -1,7 +1,9 @@
 package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.controller;
 
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc.GestorDocumentation;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service.ReembolsoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -13,11 +15,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/gestor")
 @RequiredArgsConstructor
 @Validated
-public class GestorController {
+public class GestorController implements GestorDocumentation {
     private final ReembolsoService reembolsoService;
 
     @PutMapping("/aprovar/{idReembolso}")
-    public ResponseEntity<ReembolsoDTO> updateAprovar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean aprovado) throws EntidadeNaoEncontradaException {
+    public ResponseEntity<ReembolsoDTO> updateAprovar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean aprovado) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         return new ResponseEntity<>(reembolsoService.updateGestorAprovar(idReembolso, aprovado), HttpStatus.OK);
     }
 }
