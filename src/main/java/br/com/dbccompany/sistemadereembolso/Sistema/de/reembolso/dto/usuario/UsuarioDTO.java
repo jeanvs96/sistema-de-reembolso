@@ -17,7 +17,7 @@ public class UsuarioDTO {
     @Schema(description = "Email do usuário.")
     private String email;
 
-    @Schema(description = "Valor da soma dos reembolsos do que o usuário tem para receber.")
+    @Schema(description = "Valor da soma dos reembolsos que o usuário tem para receber.")
     private BigDecimal valorTotal;
 
     @Schema(description = "Objeto com a foto do usuário.")

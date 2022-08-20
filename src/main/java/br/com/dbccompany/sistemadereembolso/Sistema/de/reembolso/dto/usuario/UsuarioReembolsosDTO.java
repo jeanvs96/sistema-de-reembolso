@@ -4,6 +4,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.R
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Data
@@ -16,6 +17,9 @@ public class UsuarioReembolsosDTO {
 
     @Schema(description = "Email do usuário.")
     private String email;
+
+    @Schema(description = "Valor da soma dos reembolsos do que o usuário tem para receber.")
+    private BigDecimal valorTotal;
 
     @Schema(description = "Lista de objetos com os reembolsos do usuário.")
     private List<ReembolsoDTO> reembolsosDTO;

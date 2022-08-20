@@ -4,6 +4,8 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.Roles
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 public class UsuarioRolesDTO {
     @Schema(description = "ID exclusivo do usuário.")
@@ -14,6 +16,9 @@ public class UsuarioRolesDTO {
 
     @Schema(description = "Email do usuário.")
     private String email;
+
+    @Schema(description = "Valor da soma dos reembolsos do que o usuário tem para receber.")
+    private BigDecimal valorTotal;
 
     @Schema(description = "Objeto com a role do usuário.")
     private RolesDTO rolesDTO;

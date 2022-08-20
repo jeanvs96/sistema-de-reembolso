@@ -13,7 +13,7 @@ public class UsuarioComposeDTO {
     @Schema(description = "Nome do usuário.")
     private String nome;
 
-    @Schema(description = "")
+    @Schema(description = "Valor da soma dos reembolsos do que o usuário tem para receber.")
     private BigDecimal valorTotal;
 
     @Schema(description = "Email do usuário.")
