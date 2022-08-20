@@ -18,7 +18,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
@@ -69,7 +68,6 @@ public class ArquivosServiceTest {
     @Test(expected = RegraDeNegocioException.class)
     public void deveTestarSaveFoto() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
-
         when(multipartFileDataReader.readData(any(MultipartFile.class))).thenThrow(IOException.class);
 
         arquivosService.saveFoto(file);

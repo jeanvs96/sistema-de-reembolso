@@ -26,9 +26,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -77,10 +77,9 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateGestorAprovarComSucesso() throws EntidadeNaoEncontradaException {
+    public void deveTestarUpdateGestorAprovarComSucesso() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
-        UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
 
         when(reembolsoRepository.findById(anyInt())).thenReturn(Optional.of(reembolsoEntity));
@@ -93,7 +92,7 @@ public class ReembolsoServiceTest {
         assertEquals(500L, reembolsoAprovadoDTO.getValor().longValue());
     }
     @Test
-    public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws EntidadeNaoEncontradaException {
+    public void deveTestarUpdateGestorAprovarComStatusReprovado_Gestor() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -112,7 +111,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateGestorReprovarComSucesso() throws EntidadeNaoEncontradaException {
+    public void deveTestarUpdateGestorReprovarComSucesso() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -131,7 +130,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateFinanceiroPagarComSucesso() throws EntidadeNaoEncontradaException {
+    public void deveTestarUpdateFinanceiroPagarComSucesso() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
         Boolean aprovado = true;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -150,7 +149,7 @@ public class ReembolsoServiceTest {
     }
 
     @Test
-    public void deveTestarUpdateFinanceiroReprovarComSucesso() throws EntidadeNaoEncontradaException {
+    public void deveTestarUpdateFinanceiroReprovarComSucesso() throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         Integer idReembolso = 1;
         Boolean aprovado = false;
         UsuarioEntity usuarioEntity = getUsuarioEntity();
@@ -220,7 +219,7 @@ public class ReembolsoServiceTest {
     public void deveTestarUpdateByIdReembolsoIUsuarioComSucesso() throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = getUsuarioEntity();
         ReembolsoEntity reembolsoEntity = getReembolsoEntity();
-        reembolsoEntity.setValor(400.0);
+        reembolsoEntity.setValor(new BigDecimal(400));
         when(usuarioService.findById(anyInt())).thenReturn(usuarioEntity);
         when(reembolsoRepository.findByIdReembolsoAndUsuarioEntity(anyInt(), any(UsuarioEntity.class))).thenReturn(Optional.of(reembolsoEntity));
         when(reembolsoRepository.save(any(ReembolsoEntity.class))).thenReturn(reembolsoEntity);
@@ -301,7 +300,7 @@ public class ReembolsoServiceTest {
         usuarioEntity.setNome("Testador");
         usuarioEntity.setEmail("testador@dbccompany.com.br");
         usuarioEntity.setSenha("123");
-        usuarioEntity.setValorTotal(500.0);
+        usuarioEntity.setValorTotal(new BigDecimal(500));
 
         return usuarioEntity;
     }
@@ -310,7 +309,7 @@ public class ReembolsoServiceTest {
         ReembolsoEntity reembolsoEntity = new ReembolsoEntity();
         reembolsoEntity.setIdReembolso(1);
         reembolsoEntity.setTitulo("Aluguel carro");
-        reembolsoEntity.setValor(500.0);
+        reembolsoEntity.setValor(new BigDecimal(500));
         reembolsoEntity.setStatus(StatusReembolso.ABERTO.ordinal());
         return reembolsoEntity;
     }
@@ -318,7 +317,7 @@ public class ReembolsoServiceTest {
     private static ReembolsoCreateDTO getReembolsoCreateDTO() {
         ReembolsoCreateDTO reembolsoCreateDTO = new ReembolsoCreateDTO();
         reembolsoCreateDTO.setTitulo("Aluguel carro");
-        reembolsoCreateDTO.setValor(500.0);
+        reembolsoCreateDTO.setValor(new BigDecimal(500));
         return reembolsoCreateDTO;
     }
 

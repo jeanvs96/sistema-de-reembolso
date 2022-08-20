@@ -2,6 +2,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,5 +21,5 @@ public interface FinanceiroDocumentation {
             }
     )
     @Operation(summary = "Altera status do reembolso.", description = "Altera status do reembolso para pago(true) ou reprovado pelo financeiro(falso).")
-    ResponseEntity<ReembolsoDTO> updatePagar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean pagar) throws EntidadeNaoEncontradaException;
+    ResponseEntity<ReembolsoDTO> updatePagar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean pagar) throws EntidadeNaoEncontradaException, RegraDeNegocioException;
 }

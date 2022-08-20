@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity(name = "reembolso")
@@ -25,7 +26,7 @@ public class ReembolsoEntity {
     private LocalDateTime dataUltimaAlteracao;
 
     @Column(name = "valor")
-    private Double valor;
+    private BigDecimal valor;
 
     @Column(name = "status")
     private Integer status;

@@ -2,6 +2,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.doc;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.reembolso.ReembolsoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.EntidadeNaoEncontradaException;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,5 +21,5 @@ public interface GestorDocumentation {
             }
     )
     @Operation(summary = "Altera status do reembolso.", description = "Altera status do reembolso para aprovado pelo gestor(true) ou reprovado pelo gestor(falso).")
-    ResponseEntity<ReembolsoDTO> updateAprovar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean aprovado) throws EntidadeNaoEncontradaException;
+    ResponseEntity<ReembolsoDTO> updateAprovar(@PathVariable("idReembolso") Integer idReembolso, @RequestParam Boolean aprovado) throws EntidadeNaoEncontradaException, RegraDeNegocioException;
 }
