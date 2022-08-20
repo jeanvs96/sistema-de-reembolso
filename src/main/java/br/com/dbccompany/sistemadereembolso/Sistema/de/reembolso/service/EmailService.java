@@ -8,6 +8,7 @@ import freemarker.template.TemplateException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -44,7 +45,7 @@ public class EmailService {
             }
             mimeMessageHelper.setText(getContentFromTemplate(reembolsoEntity), true);
             emailSender.send(mimeMessageHelper.getMimeMessage());
-        } catch (RegraDeNegocioException | MessagingException | IOException | TemplateException e) {
+        } catch (RegraDeNegocioException | MessagingException | IOException | TemplateException | MailException e) {
             log.info("Erro no envio de email");
         }
     }
