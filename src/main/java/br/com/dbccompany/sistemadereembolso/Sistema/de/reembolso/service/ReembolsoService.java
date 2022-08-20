@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +43,7 @@ public class ReembolsoService {
 
         ReembolsoEntity reembolsoSavedEntity = reembolsoRepository.save(reembolsoEntity);
 
-        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() + reembolsoSavedEntity.getValor());
+        usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal().add(reembolsoSavedEntity.getValor()));
         usuarioRepository.save(usuarioLogadoEntity);
 
         List<UsuarioComposeDTO> gestores = usuarioService.listGestores();
@@ -60,16 +59,17 @@ public class ReembolsoService {
         return reembolsoDTO;
     }
 
-    public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws EntidadeNaoEncontradaException {
+    public ReembolsoDTO updateGestorAprovar(Integer idReembolso, Boolean aprovado) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         ReembolsoEntity reembolsoAtualizado;
         ReembolsoEntity reembolsoEntity = findById(idReembolso);
         UsuarioEntity usuarioLogadoEntity = reembolsoEntity.getUsuarioEntity();
 
-        reembolsoEntity.setDataUltimaAlteracao(LocalDateTime.now());
+        verificarStatusReembolsoPago(reembolsoEntity);
 
+        reembolsoEntity.setDataUltimaAlteracao(LocalDateTime.now());
         if (aprovado) {
             if (StatusReembolso.REPROVADO_GESTOR.equals(StatusReembolso.values()[reembolsoEntity.getStatus()]) || StatusReembolso.REPROVADO_FINANCEIRO.equals(StatusReembolso.values()[reembolsoEntity.getStatus()])) {
-                usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() + reembolsoEntity.getValor());
+                usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal().add(reembolsoEntity.getValor()));
             }
             reembolsoEntity.setStatus(StatusReembolso.APROVADO_GESTOR.ordinal());
 
@@ -81,7 +81,7 @@ public class ReembolsoService {
 
             reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
 
-            usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal() - reembolsoAtualizado.getValor());
+            usuarioLogadoEntity.setValorTotal(usuarioLogadoEntity.getValorTotal().subtract(reembolsoAtualizado.getValor()));
 
             log.info("Solicitacao de reembolso REPROVADO pelo GESTOR.");
         }
@@ -91,35 +91,39 @@ public class ReembolsoService {
         return entityToDTO(reembolsoAtualizado);
     }
 
-    public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws EntidadeNaoEncontradaException {
-        ReembolsoEntity reembolsoEntity = findById(idReembolso);
-        UsuarioEntity usuarioEntity = reembolsoEntity.getUsuarioEntity();
+    public ReembolsoDTO updateFinanceiroPagar(Integer idReembolso, Boolean pagar) throws EntidadeNaoEncontradaException, RegraDeNegocioException {
         ReembolsoEntity reembolsoAtualizado;
+        ReembolsoEntity reembolsoEntityRecuperado = findById(idReembolso);
+        UsuarioEntity usuarioEntity = reembolsoEntityRecuperado.getUsuarioEntity();
 
+        verificarStatusReembolsoPago(reembolsoEntityRecuperado);
+
+        reembolsoEntityRecuperado.setDataUltimaAlteracao(LocalDateTime.now());
         if (pagar) {
-            reembolsoEntity.setStatus(StatusReembolso.FECHADO_PAGO.ordinal());
+            reembolsoEntityRecuperado.setStatus(StatusReembolso.FECHADO_PAGO.ordinal());
 
-            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntityRecuperado);
 
             log.info("Solicitacao de reembolso FECHADO E PAGO pelo FINANCEIRO.");
         } else {
-            reembolsoEntity.setStatus(StatusReembolso.REPROVADO_FINANCEIRO.ordinal());
+            reembolsoEntityRecuperado.setStatus(StatusReembolso.REPROVADO_FINANCEIRO.ordinal());
 
-            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntity);
+            reembolsoAtualizado = reembolsoRepository.save(reembolsoEntityRecuperado);
 
             log.info("Solicitacao de reembolso REPROVADO pelo FINANCEIRO.");
         }
 
-        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal() - reembolsoAtualizado.getValor());
+        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal().subtract(reembolsoAtualizado.getValor()));
         usuarioRepository.save(usuarioEntity);
 
-        reembolsoAtualizado.setDataUltimaAlteracao(LocalDateTime.now());
         return entityToDTO(reembolsoAtualizado);
     }
 
     public ReembolsoDTO updateByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario, ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = usuarioService.findById(idUsuario);
         ReembolsoEntity reembolsoEntityRecuperado = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
+
+        verificarStatusReembolsoAberto(reembolsoEntityRecuperado);
 
         ReembolsoEntity reembolsoEntity = createToEntity(reembolsoCreateDTO);
         reembolsoEntity.setIdReembolso(idReembolso);
@@ -128,7 +132,7 @@ public class ReembolsoService {
         reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
         if (!(reembolsoCreateDTO.getValor().equals(reembolsoEntityRecuperado.getValor()))){
-            usuarioEntity.setValorTotal((usuarioEntity.getValorTotal() - reembolsoEntityRecuperado.getValor()) + reembolsoCreateDTO.getValor());
+            usuarioEntity.setValorTotal((usuarioEntity.getValorTotal().subtract(reembolsoEntityRecuperado.getValor())).add(reembolsoCreateDTO.getValor()));
             usuarioRepository.save(usuarioEntity);
         }
 
@@ -142,7 +146,7 @@ public class ReembolsoService {
     public void deleteByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = usuarioService.findById(idUsuario);
         ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
-        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal() - reembolsoEntity.getValor());
+        usuarioEntity.setValorTotal(usuarioEntity.getValorTotal().subtract(reembolsoEntity.getValor()));
 
         reembolsoRepository.delete(reembolsoEntity);
 
@@ -215,8 +219,6 @@ public class ReembolsoService {
         return entityToDTO(reembolsoEntity);
     }
 
-
-
     public ReembolsoEntity findByIdAndUsuarioEntity(Integer idReembolso, UsuarioEntity usuarioEntity) throws RegraDeNegocioException {
         return reembolsoRepository.findByIdReembolsoAndUsuarioEntity(idReembolso, usuarioEntity).orElseThrow(() -> new RegraDeNegocioException("Reembolso não encontrado"));
     }
@@ -225,6 +227,17 @@ public class ReembolsoService {
         return reembolsoRepository.findById(idReembolso).orElseThrow(() -> new EntidadeNaoEncontradaException("Reembolso não encontrado"));
     }
 
+    private void verificarStatusReembolsoPago(ReembolsoEntity reembolsoEntity) throws RegraDeNegocioException {
+        if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())){
+            throw new RegraDeNegocioException("Não é possível atualizar reembolso com status PAGO");
+        }
+    }
+
+    private void verificarStatusReembolsoAberto(ReembolsoEntity reembolsoEntity) throws RegraDeNegocioException {
+        if (!reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())){
+            throw new RegraDeNegocioException("Somente reembolsos com status ABERTO podem ser editados");
+        }
+    }
     private ReembolsoEntity createToEntity(ReembolsoCreateDTO reembolsoCreateDTO) {
         return objectMapper.convertValue(reembolsoCreateDTO, ReembolsoEntity.class);
     }
