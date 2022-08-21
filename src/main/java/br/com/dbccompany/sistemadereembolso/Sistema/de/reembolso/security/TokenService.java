@@ -56,7 +56,7 @@ public class TokenService {
             List<String> roles = body.get(ROLES, List.class);
 
             List<SimpleGrantedAuthority> rolesGrantedAuthority = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority(role))
+                    .map(SimpleGrantedAuthority::new)
                     .toList();
 
             return new UsernamePasswordAuthenticationToken(idUsuario, null, rolesGrantedAuthority);

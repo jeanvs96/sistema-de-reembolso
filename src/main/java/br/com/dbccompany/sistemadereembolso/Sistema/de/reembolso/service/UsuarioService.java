@@ -21,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -56,7 +55,10 @@ public class UsuarioService {
 
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioSalvo, expiration));
-        usuarioLoginComSucessoDTO.setRole(usuarioSalvo.getRolesEntities().stream().findFirst().get().getNome());
+        RolesEntity rolesEntity = usuarioSalvo.getRolesEntities().stream()
+                .findFirst()
+                .orElseThrow(() -> new RegraDeNegocioException("Role não encontrada"));
+        usuarioLoginComSucessoDTO.setRole(rolesEntity.getNome());
         usuarioLoginComSucessoDTO.setIdUsuario(usuarioSalvo.getIdUsuario());
 
         return usuarioLoginComSucessoDTO;
@@ -111,13 +113,12 @@ public class UsuarioService {
     }
 
     public List<UsuarioComposeDTO> listGestores() {
-        List<UsuarioComposeDTO> listByCargo = usuarioRepository.findAll().stream()
+        return usuarioRepository.findAll().stream()
                 .filter(user -> user.getRolesEntities()
                         .stream()
                         .anyMatch(role -> role.getNome().equalsIgnoreCase(TipoRoles.GESTOR.getTipo())))
                 .map(this::entityToComposeDto)
                 .toList();
-        return listByCargo;
     }
 
     public UsuarioDTO listUsuarioLogged() throws EntidadeNaoEncontradaException {
@@ -129,8 +130,7 @@ public class UsuarioService {
         RolesEntity rolesEntity = rolesService.findByRole(role.getTipo());
         usuarioRolesService.deleteAllByIdUsuario(idUsuario);
 
-        Set<RolesEntity> rolesEntities = new HashSet<>();
-        rolesEntities.addAll(usuarioEntityRecuperado.getRolesEntities());
+        Set<RolesEntity> rolesEntities = new HashSet<>(usuarioEntityRecuperado.getRolesEntities());
         rolesEntities.add(rolesEntity);
         usuarioEntityRecuperado.setRolesEntities(rolesEntities);
 
@@ -154,8 +154,7 @@ public class UsuarioService {
 
     public UsuarioEntity getLoggedUser() throws EntidadeNaoEncontradaException {
         Integer idLoggedUser = getIdLoggedUser();
-        UsuarioEntity usuarioEntity = findById(idLoggedUser);
-        return usuarioEntity;
+        return findById(idLoggedUser);
     }
 
     public Integer getIdLoggedUser() {

@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
 import javax.validation.Valid;
 
 public interface AdminDocumentation {
@@ -24,7 +23,7 @@ public interface AdminDocumentation {
             }
     )
     @Operation(summary = "Criar um usuário.", description = "Cria um usuário, podendo atribuir um cargo.")
-    public ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException;
+    ResponseEntity<UsuarioDTO> createUser(@RequestBody @Valid UsuarioCreateDTO usuarioCreateDTO, TipoRoles role) throws RegraDeNegocioException;
 
     @PostMapping("/atribuir/role")
     @ApiResponses(
@@ -35,5 +34,5 @@ public interface AdminDocumentation {
             }
     )
     @Operation(summary = "Atribuir um cargo a um usuário.", description = "Atribui um cargo a um usuário buscando este pelo seu id.")
-    public ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
+    ResponseEntity<UsuarioDTO> atribuirRole(Integer idUsuario, TipoRoles role) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
 }

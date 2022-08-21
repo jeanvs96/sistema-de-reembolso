@@ -7,6 +7,7 @@ public enum StatusReembolso {
     REPROVADO_GESTOR("reprovado gestor"),
     REPROVADO_FINANCEIRO("reprovado financeiro"),
     TODOS("TODOS");
+
     private final String statusReembolso;
 
     StatusReembolso(String situacao) {

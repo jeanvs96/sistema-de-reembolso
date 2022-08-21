@@ -2,6 +2,7 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.service;
 
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginComSucessoDTO;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario.UsuarioLoginDTO;
+import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.RolesEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.entity.UsuarioEntity;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.exceptions.RegraDeNegocioException;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.security.TokenService;
@@ -31,8 +32,11 @@ public class LoginService {
         Authentication authentication = authenticationManager.authenticate(usernamePasswordAuthenticationToken);
 
         UsuarioEntity usuarioEntity = (UsuarioEntity) authentication.getPrincipal();
+        RolesEntity rolesEntity = usuarioEntity.getRolesEntities().stream()
+                .findFirst()
+                .orElseThrow(() -> new RegraDeNegocioException("Role não encontrada"));
         UsuarioLoginComSucessoDTO usuarioLoginComSucessoDTO = new UsuarioLoginComSucessoDTO();
-        usuarioLoginComSucessoDTO.setRole(usuarioEntity.getRolesEntities().stream().findFirst().get().getNome());
+        usuarioLoginComSucessoDTO.setRole(rolesEntity.getNome());
         usuarioLoginComSucessoDTO.setToken(tokenService.getToken(usuarioEntity, expiration));
         usuarioLoginComSucessoDTO.setIdUsuario(usuarioEntity.getIdUsuario());
 

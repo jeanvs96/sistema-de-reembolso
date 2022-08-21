@@ -3,7 +3,6 @@ package br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.usuario;
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.dto.roles.RolesDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-
 import java.math.BigDecimal;
 
 @Data

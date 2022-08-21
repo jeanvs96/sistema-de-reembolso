@@ -120,7 +120,7 @@ public class ArquivosServiceTest {
     public void deveTestarSaveAnexoErroAoVerificarTipoDeAnexo() throws RegraDeNegocioException, IOException, EntidadeNaoEncontradaException {
         MockMultipartFile file = new MockMultipartFile("file", "orig", null, "bar".getBytes());
 
-        arquivosService.saveAnexo(file, anyInt(), anyInt());
+        arquivosService.saveAnexo(file, 1, 1);
     }
 
     private static UsuarioEntity getUsuarioEntity() {
