@@ -55,7 +55,7 @@ public class EmailService {
 
         Template template;
         dados.put("titulo", "Título: " + reembolsoEntity.getTitulo());
-        dados.put("valor" , "Valor = R$ " + reembolsoEntity.getValor());
+        dados.put("valor", "Valor = R$ " + reembolsoEntity.getValor());
         dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
         template = fmConfiguration.getTemplate("email-template.html");
         String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);

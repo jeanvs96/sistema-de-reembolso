@@ -11,19 +11,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.exceptions.verification.WantedButNotInvoked;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.mail.internet.MimeMessage;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class EmailServiceTest {
@@ -46,7 +43,7 @@ public class EmailServiceTest {
         doNothing().when(emailSender).send(any(MimeMessage.class));
         when(fmConfiguration.getTemplate(anyString())).thenReturn(new Template("ok", "create", new Configuration()));
 
-        emailService.sendEmail(reembolsoEntity,sendTo);
+        emailService.sendEmail(reembolsoEntity, sendTo);
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
@@ -60,13 +57,13 @@ public class EmailServiceTest {
         when(emailSender.createMimeMessage()).thenReturn(mimeMessage);
         ReflectionTestUtils.setField(emailService, "from", "somente@dbccompany.com.br");
 
-        emailService.sendEmail(reembolsoEntity,sendTo);
+        emailService.sendEmail(reembolsoEntity, sendTo);
 
         verify(emailSender, times(1)).send(any(MimeMessage.class));
     }
 
 
-    private static ReembolsoEntity getReembolsoEntity(){
+    private static ReembolsoEntity getReembolsoEntity() {
         ReembolsoEntity reembolsoEntity = new ReembolsoEntity();
         reembolsoEntity.setIdReembolso(1);
         reembolsoEntity.setTitulo("reembolso1");

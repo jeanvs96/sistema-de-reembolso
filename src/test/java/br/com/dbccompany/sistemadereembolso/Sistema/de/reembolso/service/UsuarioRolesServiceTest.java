@@ -6,9 +6,9 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.mockito.ArgumentMatchers.*;
+
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.times;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UsuarioRolesServiceTest {
@@ -26,7 +26,6 @@ public class UsuarioRolesServiceTest {
 
         verify(usuarioRolesRepository, times(1)).deleteAllByIdUsuario(anyInt());
     }
-
 
 
 }

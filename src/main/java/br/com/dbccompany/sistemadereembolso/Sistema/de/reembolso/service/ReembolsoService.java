@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ReembolsoService {
         List<UsuarioComposeDTO> gestores = usuarioService.listGestores();
 
         for (UsuarioComposeDTO gestor : gestores) {
-            log.info(gestor.getEmail());
+            log.info("Email de gestor enviado para: " + gestor.getEmail());
             emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
         }
 
@@ -131,7 +132,7 @@ public class ReembolsoService {
         reembolsoEntity.setDataEntrada(reembolsoEntityRecuperado.getDataEntrada());
         reembolsoEntity.setUsuarioEntity(usuarioEntity);
 
-        if (!(reembolsoCreateDTO.getValor().equals(reembolsoEntityRecuperado.getValor()))){
+        if (!(reembolsoCreateDTO.getValor().equals(reembolsoEntityRecuperado.getValor()))) {
             usuarioEntity.setValorTotal((usuarioEntity.getValorTotal().subtract(reembolsoEntityRecuperado.getValor())).add(reembolsoCreateDTO.getValor()));
             usuarioRepository.save(usuarioEntity);
         }
@@ -228,16 +229,17 @@ public class ReembolsoService {
     }
 
     private void verificarStatusReembolsoPago(ReembolsoEntity reembolsoEntity) throws RegraDeNegocioException {
-        if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())){
+        if (reembolsoEntity.getStatus().equals(StatusReembolso.FECHADO_PAGO.ordinal())) {
             throw new RegraDeNegocioException("Não é possível atualizar reembolso com status PAGO");
         }
     }
 
     private void verificarStatusReembolsoAberto(ReembolsoEntity reembolsoEntity) throws RegraDeNegocioException {
-        if (!reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())){
+        if (!reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
             throw new RegraDeNegocioException("Somente reembolsos com status ABERTO podem ser editados");
         }
     }
+
     private ReembolsoEntity createToEntity(ReembolsoCreateDTO reembolsoCreateDTO) {
         return objectMapper.convertValue(reembolsoCreateDTO, ReembolsoEntity.class);
     }

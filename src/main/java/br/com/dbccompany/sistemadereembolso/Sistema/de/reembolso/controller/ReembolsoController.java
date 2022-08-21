@@ -13,13 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/reembolso")
 @RequiredArgsConstructor
 @Validated
-public class ReembolsoController  implements ReembolsoDocumentation {
+public class ReembolsoController implements ReembolsoDocumentation {
     private final ReembolsoService reembolsoService;
 
     @PostMapping("/create")
@@ -29,7 +30,7 @@ public class ReembolsoController  implements ReembolsoDocumentation {
 
     @PutMapping("/update/{idReembolso}/usuario/{idUsuario}")
     public ResponseEntity<ReembolsoDTO> updateByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, @PathVariable("idUsuario") Integer idUsuario, @Valid @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
-        return new ResponseEntity<>(reembolsoService.updateByIdReembolsoIdUsuario(idReembolso, idUsuario,reembolsoCreateDTO), HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(reembolsoService.updateByIdReembolsoIdUsuario(idReembolso, idUsuario, reembolsoCreateDTO), HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/delete/{idReembolso}/usuario/{idUsuario}")
@@ -39,7 +40,7 @@ public class ReembolsoController  implements ReembolsoDocumentation {
     }
 
     @GetMapping("/list/status")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
         return new ResponseEntity<>(reembolsoService.listAllReembolsosByStatus(statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 
@@ -54,7 +55,7 @@ public class ReembolsoController  implements ReembolsoDocumentation {
     }
 
     @GetMapping("/list/nome/status")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros){
+    public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) {
         return new ResponseEntity<>(reembolsoService.listAllByNomeUsuario(nome, statusReembolso, pagina, quantidadeDeRegistros), HttpStatus.OK);
     }
 }

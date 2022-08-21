@@ -20,6 +20,7 @@ public class LoginService {
     private final AuthenticationManager authenticationManager;
     private final TokenService tokenService;
     private final UsuarioService usuarioService;
+
     public UsuarioLoginComSucessoDTO login(UsuarioLoginDTO usuarioLoginDTO) throws RegraDeNegocioException {
         usuarioService.verificarHostEmail(usuarioLoginDTO.getEmail());
         UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =
