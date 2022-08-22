@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 
 @RestController
@@ -43,12 +44,12 @@ public class UsuarioController implements UsuarioDocumentation {
     }
 
     @GetMapping("/listar/nome")
-    public PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros){
+    public PageDTO<UsuarioRolesDTO> listByNome(String nome, Integer pagina, Integer quantidadeDeRegistros) {
         return usuarioService.listAllByNome(nome, pagina, quantidadeDeRegistros);
     }
 
     @GetMapping("/listar")
-    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros){
+    public PageDTO<UsuarioRolesDTO> list(Integer pagina, Integer quantidadeDeRegistros) {
         return usuarioService.listAll(pagina, quantidadeDeRegistros);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
+
 import java.util.Date;
 import java.util.List;
 
@@ -52,7 +53,7 @@ public class TokenService {
 
         Integer idUsuario = body.get(Claims.ID, Integer.class);
 
-        if (idUsuario != null){
+        if (idUsuario != null) {
             List<String> roles = body.get(ROLES, List.class);
 
             List<SimpleGrantedAuthority> rolesGrantedAuthority = roles.stream()

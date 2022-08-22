@@ -8,7 +8,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
@@ -23,7 +26,7 @@ public class ArquivoController implements ArquivoDocumentation {
     }
 
     @PostMapping(value = "/anexo/reembolso/usuario", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadAnexo(@RequestPart("file") MultipartFile file, Integer idReembolso, Integer idUsuario) throws  RegraDeNegocioException, EntidadeNaoEncontradaException {
+    public ResponseEntity<String> uploadAnexo(@RequestPart("file") MultipartFile file, Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         return new ResponseEntity<>(arquivosService.saveAnexo(file, idReembolso, idUsuario), HttpStatus.OK);
     }
 }
