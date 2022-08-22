@@ -19,7 +19,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,7 +50,7 @@ public class ReembolsoService {
 
         for (UsuarioComposeDTO gestor : gestores) {
             log.info("Email de gestor enviado para: " + gestor.getEmail());
-            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
+//            emailService.sendEmail(reembolsoSavedEntity, gestor.getEmail());
         }
 
         ReembolsoDTO reembolsoDTO = entityToDTO(reembolsoSavedEntity);
