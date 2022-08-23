@@ -147,6 +147,9 @@ public class ReembolsoService {
     public void deleteByIdReembolsoIdUsuario(Integer idReembolso, Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException {
         UsuarioEntity usuarioEntity = usuarioService.findById(idUsuario);
         ReembolsoEntity reembolsoEntity = findByIdAndUsuarioEntity(idReembolso, usuarioEntity);
+
+        verificarStatusReembolsoAberto(reembolsoEntity);
+
         usuarioEntity.setValorTotal(usuarioEntity.getValorTotal().subtract(reembolsoEntity.getValor()));
 
         reembolsoRepository.delete(reembolsoEntity);
@@ -231,7 +234,7 @@ public class ReembolsoService {
 
     private void verificarStatusReembolsoAberto(ReembolsoEntity reembolsoEntity) throws RegraDeNegocioException {
         if (!reembolsoEntity.getStatus().equals(StatusReembolso.ABERTO.ordinal())) {
-            throw new RegraDeNegocioException("Somente reembolsos com status ABERTO podem ser editados");
+            throw new RegraDeNegocioException("Somente reembolsos com status ABERTO podem ser editados/excluídos");
         }
     }
 
