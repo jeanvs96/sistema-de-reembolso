@@ -13,7 +13,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.IOException;
@@ -58,7 +57,6 @@ public class EmailService {
         dados.put("valor", "Valor = R$ " + reembolsoEntity.getValor());
         dados.put("email", "Qualquer dúvida, entre em contato com o suporte pelo e-mail " + from);
         template = fmConfiguration.getTemplate("email-template.html");
-        String html = FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
-        return html;
+        return FreeMarkerTemplateUtils.processTemplateIntoString(template, dados);
     }
 }

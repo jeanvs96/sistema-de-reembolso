@@ -77,6 +77,7 @@ create table reembolso(
                           valor double precision not null,
                           status integer not null,
                           data_entrada timestamp not null,
+                          data_ultima_alteracao timestamp,
                           id_anexos bigint,
                           id_usuario bigint not null,
                           primary key (id_reembolso),

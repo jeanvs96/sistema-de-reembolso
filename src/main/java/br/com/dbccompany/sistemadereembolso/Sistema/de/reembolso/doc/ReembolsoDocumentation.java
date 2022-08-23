@@ -11,7 +11,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
 
 public interface ReembolsoDocumentation {
@@ -24,7 +23,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Criar uma solicitação de reembolso.", description = "Cria a solicitação de um reembolso, e encaminha para aprovação do gestor, informando-o através de e-mail.")
-    public ResponseEntity<ReembolsoDTO> create(@Valid @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws EntidadeNaoEncontradaException;
+    ResponseEntity<ReembolsoDTO> create(@Valid @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws EntidadeNaoEncontradaException;
 
     @PutMapping("/update/{idReembolso}/usuario/{idUsuario}")
     @ApiResponses(
@@ -35,7 +34,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Atualizar reembolso do usuario logado.", description = "Atualiza um reembolso específico do usuario logado, buscando pelo id do reembolso.")
-    public ResponseEntity<ReembolsoDTO> updateByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, @PathVariable("idUsuario") Integer idUsuario, @Valid @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
+    ResponseEntity<ReembolsoDTO> updateByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, @PathVariable("idUsuario") Integer idUsuario, @Valid @RequestBody ReembolsoCreateDTO reembolsoCreateDTO) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
 
     @DeleteMapping("/delete/{idReembolso}/usuario/{idUsuario}")
     @ApiResponses(
@@ -46,7 +45,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Deletar reembolso do usuario logado.", description = "Deleta um reembolso específico do usuario logado, buscando pelo id do reembolso.")
-    public ResponseEntity.BodyBuilder deleteByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, @PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
+    ResponseEntity.BodyBuilder deleteByLoggedUser(@PathVariable("idReembolso") Integer idReembolso, @PathVariable("idUsuario") Integer idUsuario) throws RegraDeNegocioException, EntidadeNaoEncontradaException;
 
     @GetMapping("/list/status")
     @ApiResponses(
@@ -57,7 +56,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Listar paginando os reembolsos pelo status.", description = "Lista todos os reembolsos, filtrando pelo seu status e entregando com paginação.")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros);
+    ResponseEntity<PageDTO<ReembolsoDTO>> listAllByStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros);
 
     @GetMapping("/{idReembolso}")
     @ApiResponses(
@@ -68,7 +67,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Buscar um reembolso pelo seu id.", description = "Exibe um reembolso buscando pelo seu id.")
-    public ResponseEntity<ReembolsoDTO> listById(@PathVariable("idReembolso") Integer idReembolso) throws EntidadeNaoEncontradaException;
+    ResponseEntity<ReembolsoDTO> listById(@PathVariable("idReembolso") Integer idReembolso) throws EntidadeNaoEncontradaException;
 
     @GetMapping("/logged/list/status")
     @ApiResponses(
@@ -79,7 +78,7 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Listar paginando os reembolsos pelo usuario logado e status.", description = "Lista todos os reembolsos do usuario logado, filtrando pelo seu status e entregando com paginação.")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listAllByLoggedUserAndStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws EntidadeNaoEncontradaException;
+    ResponseEntity<PageDTO<ReembolsoDTO>> listAllByLoggedUserAndStatus(@RequestParam StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros) throws EntidadeNaoEncontradaException;
 
     @GetMapping("/list/nome/status")
     @ApiResponses(
@@ -90,5 +89,5 @@ public interface ReembolsoDocumentation {
             }
     )
     @Operation(summary = "Listar paginando os reembolsos pelo nome.", description = "Lista todos os reembolsos, filtrando pelo seu nome e entregando com paginação.")
-    public ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros);
+    ResponseEntity<PageDTO<ReembolsoDTO>> listByNome(@RequestParam("nome") String nome, StatusReembolso statusReembolso, Integer pagina, Integer quantidadeDeRegistros);
     }

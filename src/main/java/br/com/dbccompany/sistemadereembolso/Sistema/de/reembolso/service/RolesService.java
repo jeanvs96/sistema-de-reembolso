@@ -14,6 +14,7 @@ public class RolesService {
     private final RolesRepository rolesRepository;
 
     public RolesEntity findByRole(String nome) throws RegraDeNegocioException {
-        return rolesRepository.findRolesEntitiesByNome(nome).orElseThrow(() -> new RegraDeNegocioException("Role não encontrada"));
+        return rolesRepository.findRolesEntitiesByNome(nome)
+                .orElseThrow(() -> new RegraDeNegocioException("Role não encontrada"));
     }
 }

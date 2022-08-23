@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-
 import java.util.Date;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class TokenService {
             List<String> roles = body.get(ROLES, List.class);
 
             List<SimpleGrantedAuthority> rolesGrantedAuthority = roles.stream()
-                    .map(role -> new SimpleGrantedAuthority(role))
+                    .map(SimpleGrantedAuthority::new)
                     .toList();
 
             return new UsernamePasswordAuthenticationToken(idUsuario, null, rolesGrantedAuthority);

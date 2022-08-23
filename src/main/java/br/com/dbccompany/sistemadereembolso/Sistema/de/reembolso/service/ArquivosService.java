@@ -15,9 +15,7 @@ import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.Reem
 import br.com.dbccompany.sistemadereembolso.Sistema.de.reembolso.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 
 @Service
@@ -36,7 +34,7 @@ public class ArquivosService {
             verificarTipoDeFoto(file);
 
             FotosEntity fotosEntity = new FotosEntity();
-            fotosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
+            fotosEntity.setNome(file.getOriginalFilename());
             fotosEntity.setTipo(file.getContentType());
             fotosEntity.setData(multipartFileDataReader.readData(file));
             UsuarioEntity usuarioEntityLogado = usuarioService.getLoggedUser();
@@ -62,7 +60,7 @@ public class ArquivosService {
             verificarTipoDeAnexo(file);
 
             AnexosEntity anexosEntity = new AnexosEntity();
-            anexosEntity.setNome(StringUtils.cleanPath(file.getOriginalFilename()));
+            anexosEntity.setNome(file.getOriginalFilename());
             anexosEntity.setTipo(file.getContentType());
             anexosEntity.setData(multipartFileDataReader.readData(file));
             UsuarioEntity usuarioEntityRecuperado = usuarioService.findById(idUsuario);
