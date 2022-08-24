@@ -30,7 +30,8 @@ import java.util.*;
 public class UsuarioService {
     @Value("${jwt.expiration}")
     private String expiration;
-    private static final String EMAIL_HOST = "dbccompany.com.br";
+    @Value("${email-host}")
+    private String emailHost;
     private final UsuarioRepository usuarioRepository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
@@ -167,7 +168,7 @@ public class UsuarioService {
 
     public void verificarHostEmail(String email) throws RegraDeNegocioException {
         String[] emailSplit = email.split("@");
-        if (!EMAIL_HOST.equals(emailSplit[1])) {
+        if (!emailHost.equals(emailSplit[1])) {
             throw new RegraDeNegocioException("Insira um email DBC válido");
         }
     }
